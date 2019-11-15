@@ -56,14 +56,14 @@
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
-      <version>12</version>
+      <version>8</version>
   </dependency>
   <!-- FXML -->
 
   <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-fxml</artifactId>
-      <version>13</version>
+      <version>8</version>
   </dependency>
   </dependencies>
 </project>
