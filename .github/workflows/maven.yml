@@ -16,8 +16,8 @@ jobs:
     - name: Build with Maven
       run: mvn package 
     
-    - name: Download Artifact
     - uses: actions/download-artifact@master
+    - name: Download Artifact
       with: 
         name: database-proj-task2-2019.11-jar-with-dependencies.jar
         path: target/
