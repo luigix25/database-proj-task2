@@ -4,43 +4,45 @@ import java.io.File;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.*;
+import javafx.scene.control.Button;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class MainController {
 	
+	@FXML Button loadButton;
+	
+	private File currentFile;
 	private Stage currentStage;
+	
+	
+	
 	
 	public void setSession(Stage stage) {
 		this.currentStage = stage;
+		loadButton.setDisable(true);
 	}
 	
-	@FXML
-	private void companyLogin(ActionEvent event) {
-		System.err.println("login as company...");
-	//	StageUtils.replace(this, event, "/gui/LoginCompany.fxml");
-	}
-	
-	@FXML
-	private void userLogin(ActionEvent event) {
-		System.err.println("loggin in as a user...");
-	//	StageUtils.replace(this, event, "/gui/LoginUser.fxml");
-	}
-
-	@FXML
-	private void userSignup(ActionEvent event){
-		System.err.println("signing in as a user...");
-	//	StageUtils.replace(this, event, "/gui/signup.fxml");
-	}
 	
 	@FXML
 	private void login(ActionEvent event) {
 	
 		FileChooser fileChooser = new FileChooser();
-		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
-		fileChooser.getExtensionFilters().add(extFilter);
+		//FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+		//fileChooser.getExtensionFilters().add(extFilter);
 		File file = fileChooser.showOpenDialog(this.currentStage);
-		System.out.println(file);	
+		if(file != null)
+			this.loadButton.setDisable(false);
+		
+		currentFile = file;
+		//System.out.println(file);	
+		
+	}
+	
+	@FXML
+	private void load(ActionEvent event) {
+	
+		System.out.println(this.currentFile);	
 		
 	}
 	
