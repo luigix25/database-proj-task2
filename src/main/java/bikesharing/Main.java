@@ -11,8 +11,22 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
 	public static void main(String[] args) {
-		System.out.println("Helloh");
+	/*	MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+		MongoDatabase database = mongoClient.getDatabase("ducange");
+		MongoCollection<Document> collection = database.getCollection("members");
+		MongoCursor<Document> cursor = collection.find().iterator();
+		try {
+			while (cursor.hasNext()) {
+				System.out.println(cursor.next().toJson());
+			}
+		} finally {
+			cursor.close();
+		}		
+		mongoClient.close();
+		*/
 		launch();
+		DatabaseManager.close();
+		
 	}
 
 	@Override

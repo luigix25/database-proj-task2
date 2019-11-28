@@ -1,6 +1,9 @@
 package bikesharing.gui;
 
 import java.io.File;
+import java.util.List;
+
+import bikesharing.*;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.*;
@@ -42,7 +45,12 @@ public class MainController {
 	@FXML
 	private void load(ActionEvent event) {
 	
-		System.out.println(this.currentFile);	
+		FileManager fm = new FileManager(this.currentFile.toURI());
+		List<String>data = fm.readLines();
+		DatabaseManager dm = DatabaseManager.getInstance();
+		dm.insertBatch(data, "members");
+		
+		//System.out.println(this.currentFile.toURI());	
 		
 	}
 	
