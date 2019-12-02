@@ -6,4 +6,5 @@ target/
 .factorypath
 .idea/
 *.iml
+*.csv
 .github/
