@@ -1,0 +1,48 @@
+Trips per City ( no matter of the year )
+
+db.collection.aggregate([{
+    $group: {
+        _id: "$city",
+        trips: {
+            $sum: 1
+        }
+    }
+}])
+
+Trips per city/Year grouped by month
+
+
+[{
+    $match: {
+        city: "Austin"
+    }
+}, {
+    $addFields: {
+        year: {
+            $year: "$time.timestamp_start"
+        },
+        month: {
+            $month: "$time.timestamp_start"
+        }
+    }
+}, {
+    $match: {
+        year: 2014
+    }
+}, {
+    $group: {
+        _id: "$month",
+        year: {
+            $first: "$year"
+        },
+        city: {
+            $first: "$city"
+        },
+        month: {
+            $first: "$month"
+        },
+        trips: {
+            $sum: 1
+        }
+    }
+}]
