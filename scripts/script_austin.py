@@ -31,8 +31,11 @@ with open('austin_small.csv', newline='') as csvfile:
 		start_station_id 	= row["start_station_id"][:-2]
 		end_station_id 		= row["end_station_id"][:-2]
 
-		station_start 	= stations[start_station_id]
-		station_end 	= stations[end_station_id]
+		try:
+			station_start 	= stations[start_station_id]
+			station_end 	= stations[end_station_id]
+		except Exception as e:
+			continue
 
 		space["station_start"] 	= city_tag +":"+ start_station_id
 		space["station_end"] 	= city_tag +":"+ end_station_id
@@ -48,5 +51,6 @@ with open('austin_small.csv', newline='') as csvfile:
 		normalized_row["time"] 	= time
 		normalized_row["city"] 	= city
 		normalized_row["space"] = space
-		normalized_row["type"] 	= rider
+		normalized_row["rider"] = rider
+
 		print(json.dumps(normalized_row))
