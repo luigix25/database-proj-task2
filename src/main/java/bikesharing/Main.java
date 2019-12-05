@@ -24,6 +24,9 @@ public class Main extends Application {
 		}		
 		mongoClient.close();
 		*/
+		
+		//DatabaseManager.getInstance().tripsPerCityYear("Austin", 2014, "members");
+
 		launch();
 		DatabaseManager.close();
 		
