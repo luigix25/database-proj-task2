@@ -94,7 +94,9 @@ public class DatabaseManager {
 		
 		MongoCollection<Document> collection = database.getCollection(collectionName);
 		
-		List<Bson> list = Arrays.asList(
+		//Updates all the fields inside the collection, so that they use the Date format, instead of String, parsing it using the specified format
+		
+		List<Bson> pipeline = Arrays.asList(
 				Aggregates.addFields(
 						new Field<Document>("time",
 								new Document("timestamp_start",new Document("$dateFromString",new Document("dateString", "$time.timestamp_start").append("format", "%Y-%m-%d %H:%M:%S")))
@@ -105,7 +107,7 @@ public class DatabaseManager {
 		);
 		
 		try {
-			collection.updateMany(new Document(), list);
+			collection.updateMany(new Document(), pipeline);
 		} catch(Exception e) {
 			e.printStackTrace();
 			return false;
@@ -164,7 +166,7 @@ public class DatabaseManager {
 				Aggregates.match(new Document("year",year)),
 				//Group by Month
 				Aggregates.group("$month", Accumulators.sum("trips", 1),
-						//Otherwise the fields will be lost
+						//Otherwise these fields will be lost
 						new BsonField("year", new Document("$first","$year")),
 						new BsonField("city", new Document("$first","$city")),
 						new BsonField("month", new Document("$first","$month"))
