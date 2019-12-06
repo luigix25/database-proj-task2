@@ -94,6 +94,12 @@ public class DatabaseManager {
 		
 		MongoCollection<Document> collection = database.getCollection(collectionName);
 		
+		//"time.timestamp_end": {$not: {$type:9}}  filters all the non-date fields
+
+		Document filter = new Document("time.timestamp_end",new Document("$not",new Document("$type",9)));
+		
+
+		
 		//Updates all the fields inside the collection, so that they use the Date format, instead of String, parsing it using the specified format
 		
 		List<Bson> pipeline = Arrays.asList(
@@ -107,7 +113,7 @@ public class DatabaseManager {
 		);
 		
 		try {
-			collection.updateMany(new Document(), pipeline);
+			collection.updateMany(filter, pipeline);
 		} catch(Exception e) {
 			e.printStackTrace();
 			return false;
