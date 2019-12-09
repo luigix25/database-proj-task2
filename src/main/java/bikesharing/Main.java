@@ -35,9 +35,9 @@ public class Main extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		FXMLLoader fxml = new FXMLLoader();
-		Parent root = fxml.load(getClass().getResource("/gui/index.fxml").openStream());
-		MainController controller = (MainController) fxml.getController();
-		controller.setSession(stage);
+		Parent root = fxml.load(getClass().getResource("/gui/login.fxml").openStream());
+		//MainController controller = (MainController) fxml.getController();
+		//controller.setSession(stage);
 		
 		Scene scene = new Scene(root);
         stage.setScene(scene);

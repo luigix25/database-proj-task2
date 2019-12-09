@@ -6,9 +6,68 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bikesharing.gui.MainController">
-   <children>
-      <Button fx:id="loginButton" layoutX="14.0" layoutY="138.0" mnemonicParsing="false" onAction="#login" text="Pick File" />
-      <Button fx:id="loadButton" layoutX="127.0" layoutY="138.0" mnemonicParsing="false" onAction="#load" text="Load" />
-   </children>
-</Pane>
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bikesharing.gui.IndexController">
+  <tabs>
+      <Tab text="Load Dataset">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <VBox layoutX="39.0" layoutY="14.0" prefHeight="200.0" prefWidth="100.0" spacing="16.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Please make sure that the file you are going to load is complient with the standards." />
+                        <HBox spacing="8.0">
+                           <children>
+                              <Button fx:id="chooseButton" mnemonicParsing="false" onAction="#choose" text="Choose file" />
+                              <Label fx:id="path" prefHeight="27.0" prefWidth="457.0" />
+                           </children>
+                        </HBox>
+                        <Button fx:id="loadButton" mnemonicParsing="false" onAction="#load" text="Load" />
+                     </children>
+                     <padding>
+                        <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
+                     </padding>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </content>
+      </Tab>
+    <Tab text="Employees">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <TableView prefHeight="367.0" prefWidth="400.0">
+                          <columns>
+                            <TableColumn prefWidth="75.0" text="ID" />
+                            <TableColumn prefWidth="107.0" text="Name" />
+                              <TableColumn prefWidth="106.0" text="Surname" />
+                              <TableColumn prefWidth="110.0" text="Status" />
+                          </columns>
+                        </TableView>
+                        <VBox prefHeight="367.0" prefWidth="202.0" spacing="12.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Actions" />
+                              <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="182.0" text="Promote" />
+                              <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="182.0" text="Demote" />
+                              <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="182.0" text="Fire" />
+                           </children>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                           <padding>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children></AnchorPane>
+      </content>
+    </Tab>
+    <Tab text="Statistics">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+      </content>
+    </Tab>
+  </tabs>
+</TabPane>

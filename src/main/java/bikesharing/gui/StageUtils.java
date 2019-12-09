@@ -23,7 +23,7 @@ public class StageUtils {
 			
 			Stage stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
 			Scene scene = new Scene(root);
-			scene.getStylesheets().add(o.getClass().getResource("/gui/stylesheets/bootstrap3.css").toExternalForm());
+			//scene.getStylesheets().add(o.getClass().getResource("/gui/stylesheets/bootstrap3.css").toExternalForm());
 	        stage.setScene(scene);
 	        stage.show();
 		} catch (IOException e) {
