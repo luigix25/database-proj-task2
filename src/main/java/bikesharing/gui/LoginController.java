@@ -1,5 +1,7 @@
 package bikesharing.gui;
 
+import bikesharing.DatabaseManager;
+import bikesharing.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -24,7 +26,13 @@ public class LoginController {
             return;
         }
         
-        StageUtils.replace(this, event, "/gui/index.fxml");
-        
+        DatabaseManager dm = DatabaseManager.getInstance();
+        User user = dm.login(id.getText(), password.getText());
+        if (user != null) {
+        	IndexController ctrl = (IndexController) StageUtils.replace(this, event, "/gui/index.fxml");
+        	ctrl.setSession(user);
+        }
+        else
+        	status.setText("Invalid credentials");
     }
 }

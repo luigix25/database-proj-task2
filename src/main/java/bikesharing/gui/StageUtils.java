@@ -11,6 +11,11 @@ import javafx.stage.Stage;
 
 public class StageUtils {
 	
+	/* get current stage */
+	public static Stage getStage(ActionEvent event) {
+		return (Stage) ((Node)event.getSource()).getScene().getWindow();
+	}
+	
 	/* replaces current window with a new one */	
 	public static Object replace(Object o, ActionEvent event, String filename) {
 		Object controller = null;

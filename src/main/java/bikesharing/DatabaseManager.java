@@ -3,6 +3,7 @@ package bikesharing;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -53,6 +54,19 @@ public class DatabaseManager {
 		instance.mongoClient.close();
 	}
 	
+	public User login(String id, String password) {
+		Document d = database.getCollection("user").find(and(eq("id", id), eq("password", password))).first();
+		if (d != null) {
+			User user = new User();
+			user.setId(d.getString("id"));
+			user.setName(d.getString("name"));
+			user.setSurname(d.getString("surname"));
+			user.setStatus(d.getString("status"));
+			return user;
+		}
+		return null;
+	}
+	
 	public boolean insertDocument(String data, String collectionName) {
 		Document document = Document.parse(data);
 		try {
@@ -65,6 +79,9 @@ public class DatabaseManager {
 	}
 	
 	public boolean insertBatch(List<String>data, String collectionName) {
+		if (data == null)
+			return false;
+		
 		List<Document> documents = new ArrayList<Document>();
 		for(String json : data) {
 			Document doc;

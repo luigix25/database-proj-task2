@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bikesharing.gui.IndexController">
+<TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bikesharing.gui.IndexController">
   <tabs>
-      <Tab text="Load Dataset">
+      <Tab fx:id="manageDatasetTab" text="Manage Dataset">
          <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
                   <VBox layoutX="39.0" layoutY="14.0" prefHeight="200.0" prefWidth="100.0" spacing="16.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Insert new Trips">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Text>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Please make sure that the file you are going to load is complient with the standards." />
                         <HBox spacing="8.0">
                            <children>
@@ -21,7 +27,50 @@
                               <Label fx:id="path" prefHeight="27.0" prefWidth="457.0" />
                            </children>
                         </HBox>
-                        <Button fx:id="loadButton" mnemonicParsing="false" onAction="#load" text="Load" />
+                        <HBox spacing="8.0">
+                           <children>
+                              <Button fx:id="loadButton" mnemonicParsing="false" onAction="#load" text="Load" />
+                              <Label fx:id="loadStatus" prefHeight="27.0" prefWidth="495.0" textFill="RED" />
+                           </children>
+                        </HBox>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Delete Trips">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Text>
+                        <HBox spacing="6.0">
+                           <children>
+                              <MenuButton fx:id="city" mnemonicParsing="false" prefHeight="27.0" prefWidth="77.0" text="City">
+                                <items>
+                                  <MenuItem mnemonicParsing="false" text="Action 1" />
+                                  <MenuItem mnemonicParsing="false" text="Action 2" />
+                                </items>
+                              </MenuButton>
+                              <HBox>
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="27.0" prefWidth="44.0" text="From:" />
+                                    <DatePicker fx:id="fromDate" />
+                                 </children>
+                              </HBox>
+                              <HBox>
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="27.0" prefWidth="31.0" text="to:" />
+                                    <DatePicker fx:id="toDate" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <HBox spacing="8.0">
+                           <children>
+                              <Button fx:id="loadButton1" mnemonicParsing="false" onAction="#delete" text="Delete" />
+                              <Label fx:id="deleteStatus" prefHeight="27.0" prefWidth="487.0" textFill="RED" />
+                           </children>
+                        </HBox>
+                        <Label alignment="CENTER" prefHeight="17.0" prefWidth="633.0" text="© 2020 WBP Bike Sharing System">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Label>
                      </children>
                      <padding>
                         <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
@@ -31,7 +80,7 @@
             </AnchorPane>
          </content>
       </Tab>
-    <Tab text="Employees">
+    <Tab fx:id="employeesTab" text="Employees">
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
@@ -64,7 +113,7 @@
                </children></AnchorPane>
       </content>
     </Tab>
-    <Tab text="Statistics">
+    <Tab fx:id="statisticsTab" text="Statistics">
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
       </content>

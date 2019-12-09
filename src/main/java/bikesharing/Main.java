@@ -1,7 +1,5 @@
 package bikesharing;
 
-import bikesharing.gui.MainController;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -26,8 +24,8 @@ public class Main extends Application {
 		*/
 		
 		//DatabaseManager.getInstance().tripsPerCityYear("Austin", 2014, "members");
-
 		launch();
+		System.out.println("Closing db connection...");
 		DatabaseManager.close();
 		
 	}
@@ -43,5 +41,4 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.show();		
 	}
-
 }
