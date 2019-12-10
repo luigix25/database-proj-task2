@@ -27,7 +27,7 @@ public class DatabaseManager {
 	private final String password = "prova";
 
 	private final String portNumber = "27017";
-	private final String mongoURL = "mongodb://"+username+":"+password+"@"+hostname+"/?authSource=admin";
+	private final String mongoURL = "mongodb://"+username+":"+password+"@"+hostname+":"+portNumber+"/?authSource=admin";
 	
 	
 	private final String databaseName = "ducange";
