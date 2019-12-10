@@ -1,7 +1,6 @@
 package bikesharing.gui;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.Document;
@@ -103,7 +102,7 @@ public class IndexController {
 		
 	}
 
-	private void loadUsers() {
+	public void loadUsers() {
 		List<User> users = DatabaseManager.getInstance().getAllUsers();
 		tableView.getItems().setAll(users);
 
@@ -190,7 +189,8 @@ public class IndexController {
 	
 	@FXML
 	private void hire() {
-		StageUtils.open(this, null, "/gui/user.fxml");
+		UserController ctrl = (UserController) StageUtils.open(this, null, "/gui/user.fxml");
+		ctrl.init(this);
 	}
 		
 }

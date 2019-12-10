@@ -8,12 +8,18 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 
-public class userController {
+public class UserController {
 	@FXML private TextField name;
 	@FXML private TextField surname;
 	@FXML private Label status;
 	
+	private IndexController indexCtrl;
+	
 	DatabaseManager dm;
+	
+	public void init(IndexController indexCtrl) {
+		this.indexCtrl = indexCtrl;
+	}
 	
 	@FXML
 	private void insertUser() {
@@ -30,11 +36,15 @@ public class userController {
 		User user = new User();
 		user.setName(name.getText());
 		user.setSurname(surname.getText());
+		user.setStatus("S");
+		user.setPassword("farzaneh");
 		
 		dm = DatabaseManager.getInstance();
-		if (!dm.insertUser()) {
+		if (!dm.insertUser(user)) {
 			status.setText("Database error: impossible to insert a new user");
 		} else {
+			indexCtrl.loadUsers();
+			
 			Alert alert = new Alert(AlertType.INFORMATION);
 	        alert.setTitle("Success");
 	        alert.setHeaderText("Successfully done!");

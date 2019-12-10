@@ -4,6 +4,7 @@ public class User {
 	private String id;
 	private String name;
 	private String surname;
+	private String password;
 	private String status;
 	
 	public String getId() {
@@ -23,6 +24,12 @@ public class User {
 	}
 	public void setSurname(String surname) {
 		this.surname = surname;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	public String getStatus() {
 		return status;
