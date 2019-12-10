@@ -28,7 +28,7 @@ public class DatabaseManager {
 	private final String password = "prova";
 
 	private final String portNumber = "27017";
-	private final String mongoURL = "mongodb://"+username+":"+password+"@"+hostname+"/?authSource=admin";
+	private final String mongoURL = "mongodb://"+username+":"+password+"@"+hostname+":"+portNumber+"/?authSource=admin";
 	
 	
 	private final String databaseName = "ducange";
@@ -89,7 +89,7 @@ public class DatabaseManager {
 			try {
 				doc = Document.parse(json);
 			} catch(Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 				return false;
 			}
 			documents.add(doc);
@@ -106,7 +106,7 @@ public class DatabaseManager {
 		
 		//return true;
 	}
-	
+		
 	
 	private boolean fixDate(String collectionName) {
 		
@@ -214,6 +214,24 @@ public class DatabaseManager {
 		
 		return result;
 		
+	}
+	
+	public List<User> getAllUsers(){
+		
+		List<User> users = new ArrayList<User>();
+		MongoCursor<Document> cursor = database.getCollection("user").find().iterator();
+		while(cursor.hasNext()) {
+				Document document = cursor.next();
+				User user = new User();
+				user.setId((String)document.get("id"));
+				user.setName((String)document.get("name"));
+				user.setSurname((String)document.get("surname"));
+				user.setStatus((String)document.get("status"));
+				users.add(user);
+		}
+		
+		return users;
+		
 		
 	}
 	
@@ -233,4 +251,5 @@ public class DatabaseManager {
 		
 		return cities;
 	}
+
 }

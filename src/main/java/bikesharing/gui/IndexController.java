@@ -1,27 +1,18 @@
 package bikesharing.gui;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
-
-import javax.activation.MimetypesFileTypeMap;
-import javax.swing.JOptionPane;
 
 import bikesharing.DatabaseManager;
 import bikesharing.FileManager;
 import bikesharing.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
+
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.cell.PropertyValueFactory;
+
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -30,7 +21,7 @@ public class IndexController {
 	@FXML private Tab manageDatasetTab;
 	@FXML private Tab employeesTab;
 	@FXML private Tab statisticsTab;
-	
+
 	/* Manage Dataset */
 	/* Insert new Tips */
 	@FXML private Button chooseButton;
@@ -42,9 +33,15 @@ public class IndexController {
 	@FXML private DatePicker fromDate;
 	@FXML private DatePicker toDate;
 	@FXML private Label deleteStatus;
-	
+
+	@FXML private TableView<User> tableView;
+	@FXML private TableColumn<User,String> columnID;
+	@FXML private TableColumn<User,String> columnName;
+	@FXML private TableColumn<User,String> columnSurname;
+	@FXML private TableColumn<User,String> columnStatus;
+
 	private String tripsCollection = "members";
-	
+
 	private File currentFile;
 	private User user;
 	
@@ -67,6 +64,26 @@ public class IndexController {
 			tabPane.getTabs().remove(manageDatasetTab);
 			tabPane.getTabs().remove(employeesTab);
 		}
+		
+		initTable();
+	}
+
+	private void initTable() {
+
+		columnID.setCellValueFactory(new PropertyValueFactory<User, String>("id"));
+		columnName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
+		columnSurname.setCellValueFactory(new PropertyValueFactory<User, String>("surname"));
+		columnStatus.setCellValueFactory(new PropertyValueFactory<User, String>("status"));
+		loadUsers();
+		
+		
+	}
+
+	private void loadUsers() {
+		List<User> users = DatabaseManager.getInstance().getAllUsers();
+		tableView.getItems().setAll(users);
+
+		
 	}
 	
 	private void setUpCitySelector() {
@@ -85,18 +102,25 @@ public class IndexController {
 		currentFile = fileChooser.showOpenDialog(stage);
 		path.setText(currentFile.getPath());
 	}
-	
+
 	@FXML
 	private void load() {
 		loadStatus.setText("");
-		
+
 		if (currentFile == null) {
 			loadStatus.setText("Please choose the file to load.");
 			return;
 		}
-			
+
 		FileManager fm = new FileManager(this.currentFile.toURI());
-		List<String>data = fm.readLines();
+		List<String> data;
+		
+		try {
+			data = fm.readLines();
+		} catch (Exception e) {
+			return;
+		}
+		
 		if (!dm.insertBatch(data, tripsCollection)) {
 			loadStatus.setText("Impossible to load this file. Check the format.");
 			return;
@@ -107,7 +131,7 @@ public class IndexController {
         alert.setHeaderText("Dataset successfully imported");
         alert.showAndWait();
 	}
-	
+
 	@FXML
 	private void delete() {
 		deleteStatus.setText("");
@@ -116,12 +140,12 @@ public class IndexController {
 			deleteStatus.setText("Please select the city.");
 			return;
 		}
-		
+
 		if (fromDate.getValue() == null) {
 			deleteStatus.setText("Please enter the start date.");
 			return;
 		}
-		
+
 		if (toDate.getValue() == null) {
 			deleteStatus.setText("Please enter the end date.");
 			return;
@@ -137,6 +161,6 @@ public class IndexController {
         alert.setTitle("Success");
         alert.setHeaderText("Success: " + deletedTrips + " document(s) have been deleted");
         alert.showAndWait();
-		
 	}
+		
 }
