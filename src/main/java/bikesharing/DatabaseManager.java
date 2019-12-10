@@ -230,7 +230,6 @@ public class DatabaseManager {
 				user.setStatus((String)document.get("status"));
 				users.add(user);
 				
-				insertUser(user);
 		}
 		
 		return users;
