@@ -259,7 +259,6 @@ public class DatabaseManager {
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		try {
 			String json = ow.writeValueAsString(user);
-			System.out.println(json);
 			return insertDocument(json,"user");
 			
 		} catch (Exception e) {
@@ -267,6 +266,56 @@ public class DatabaseManager {
 			return false;
 		} 
 				
+	}
+	
+	public boolean promoteUser(User user) {
+		Document filter = new Document("id",user.getId());
+		String currentLevel = (String)user.getStatus();
+		String newLevel = null;
+		
+		if(currentLevel.equals("A")) {
+			return true;
+		} else if(currentLevel.equals("S")) {
+			System.out.println("Promoting to Collaborator");
+			newLevel = "C";
+		} else if(currentLevel.equals("C")) {
+			return true; 
+		}
+		
+		List<Bson> pipeline = Arrays.asList(
+				Aggregates.addFields(new Field<String>("status",newLevel))
+		);
+		
+		
+		database.getCollection("user").updateOne(filter, pipeline);
+		
+		return true;
+		
+	}
+	
+	public boolean demoteUser(User user) {
+		Document filter = new Document("id",user.getId());
+		String currentLevel = (String)user.getStatus();
+		String newLevel = null;
+		
+		if(currentLevel.equals("A")) {
+			return true;
+		} else if(currentLevel.equals("C")) {
+			System.out.println("Demoting to Collaborator");
+			newLevel = "S";
+		} else if(currentLevel.equals("S")) {
+			return true; 
+		}
+		
+		List<Bson> pipeline = Arrays.asList(
+				Aggregates.addFields(new Field<String>("status",newLevel))
+		);
+		
+		
+		database.getCollection("user").updateOne(filter, pipeline);
+		
+		return true;
+		
 	}
 
 }

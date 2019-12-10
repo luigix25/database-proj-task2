@@ -126,6 +126,30 @@ public class IndexController {
 		if(currentFile != null)
 			path.setText(currentFile.getPath());
 	}
+	
+	@FXML
+	private void promoteUser(ActionEvent event) {
+		User user = tableView.getSelectionModel().getSelectedItem();
+		if(user == null)
+			return;
+				
+		dm.promoteUser(user);
+		loadUsers();
+		
+	}
+	
+	@FXML
+	private void demoteUser(ActionEvent event) {
+		User user = tableView.getSelectionModel().getSelectedItem();
+		if(user == null)
+			return;
+		
+		System.out.println(user);
+		
+		dm.demoteUser(user);
+		loadUsers();
+		
+	}
 
 	@FXML
 	private void load() {

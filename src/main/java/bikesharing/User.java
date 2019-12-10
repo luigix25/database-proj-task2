@@ -38,5 +38,7 @@ public class User {
 		this.status = status;
 	}
 	
-	
+	public String toString() {
+		return "< "+getId()+" "+getName()+" "+getSurname()+" "+getStatus()+" >";
+	}
 }
