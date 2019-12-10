@@ -40,22 +40,17 @@
                         </Text>
                         <HBox spacing="6.0">
                            <children>
-                              <MenuButton fx:id="city" mnemonicParsing="false" prefHeight="27.0" prefWidth="77.0" text="City">
-                                <items>
-                                  <MenuItem mnemonicParsing="false" text="Action 1" />
-                                  <MenuItem mnemonicParsing="false" text="Action 2" />
-                                </items>
-                              </MenuButton>
+                              <ChoiceBox fx:id="citySelector" prefHeight="27.0" prefWidth="165.0" />
                               <HBox>
                                  <children>
                                     <Label alignment="CENTER_RIGHT" prefHeight="27.0" prefWidth="44.0" text="From:" />
-                                    <DatePicker fx:id="fromDate" />
+                                    <DatePicker fx:id="fromDate" maxWidth="150.0" />
                                  </children>
                               </HBox>
                               <HBox>
                                  <children>
                                     <Label alignment="CENTER_RIGHT" prefHeight="27.0" prefWidth="31.0" text="to:" />
-                                    <DatePicker fx:id="toDate" />
+                                    <DatePicker fx:id="toDate" maxWidth="150.0" />
                                  </children>
                               </HBox>
                            </children>

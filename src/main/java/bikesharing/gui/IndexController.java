@@ -14,10 +14,12 @@ import bikesharing.FileManager;
 import bikesharing.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.stage.FileChooser;
@@ -36,7 +38,7 @@ public class IndexController {
 	@FXML private Label path;
 	@FXML private Label loadStatus;
 	/* Delete Trips */
-	@FXML private MenuButton city;
+	@FXML private ChoiceBox<String> citySelector;
 	@FXML private DatePicker fromDate;
 	@FXML private DatePicker toDate;
 	@FXML private Label deleteStatus;
@@ -46,14 +48,31 @@ public class IndexController {
 	private File currentFile;
 	private User user;
 	
-	public void setSession(User user) {
+	private DatabaseManager dm;
+	
+	public void init(User user) {
+		dm = DatabaseManager.getInstance();
+		setSession(user);
+		setUpCitySelector();
+	}
+	
+	private void setSession(User user) {
 		this.user = user;
-		// TODO -- remove
-		System.out.println(this.user.getStatus());
+		
+		if (this.user.getStatus().equals("C")) {
+			tabPane.getTabs().remove(employeesTab);
+		}
+		
 		if (this.user.getStatus().equals("S")) {
 			tabPane.getTabs().remove(manageDatasetTab);
 			tabPane.getTabs().remove(employeesTab);
 		}
+	}
+	
+	private void setUpCitySelector() {
+		List<String> cities = dm.getCities();
+		for (String city : cities)
+			citySelector.getItems().add(city);
 	}
 	
 	@FXML
@@ -75,34 +94,28 @@ public class IndexController {
 			loadStatus.setText("Please choose the file to load.");
 			return;
 		}
-		
-		/* TODO -- check the mime type: unfortunately it is based on the file extension 
-		try {
-			System.out.println(currentFile.toURI().toURL().openConnection().getContentType());
-			if (!currentFile.toURI().toURL().openConnection().getContentType().equals("text/plain")) {
-				loadStatus.setText("Please choose a text file.");
-				return;
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
 			
 		FileManager fm = new FileManager(this.currentFile.toURI());
 		List<String>data = fm.readLines();
-		DatabaseManager dm = DatabaseManager.getInstance();
 		if (!dm.insertBatch(data, tripsCollection)) {
-			JOptionPane.showMessageDialog(null, "Error");
 			loadStatus.setText("Impossible to load this file. Check the format.");
+			return;
 		}
-		else
-			JOptionPane.showMessageDialog(null, "Success");
+		
+		Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Success");
+        alert.setHeaderText("Dataset successfully imported");
+        alert.showAndWait();
 	}
 	
 	@FXML
 	private void delete() {
 		deleteStatus.setText("");
+		
+		if (citySelector.getValue() == null) {
+			deleteStatus.setText("Please select the city.");
+			return;
+		}
 		
 		if (fromDate.getValue() == null) {
 			deleteStatus.setText("Please enter the start date.");
@@ -114,6 +127,16 @@ public class IndexController {
 			return;
 		}
 		
-		// TODO -- check the city selection
+		int deletedTrips = dm.deleteTrips(citySelector.getValue().toString(), fromDate.getValue(), toDate.getValue());
+		if (deletedTrips == 0) {
+			deleteStatus.setText("0 documents have been deleted.");
+			return;
+		}
+		
+		Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Success");
+        alert.setHeaderText("Success: " + deletedTrips + " document(s) have been deleted");
+        alert.showAndWait();
+		
 	}
 }

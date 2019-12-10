@@ -30,7 +30,7 @@ public class LoginController {
         User user = dm.login(id.getText(), password.getText());
         if (user != null) {
         	IndexController ctrl = (IndexController) StageUtils.replace(this, event, "/gui/index.fxml");
-        	ctrl.setSession(user);
+        	ctrl.init(user);
         }
         else
         	status.setText("Invalid credentials");

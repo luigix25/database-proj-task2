@@ -1,9 +1,9 @@
 package bikesharing;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -14,6 +14,7 @@ import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.BsonField;
 import com.mongodb.client.model.Field;
 import com.mongodb.client.model.Projections;
+import com.mongodb.client.result.DeleteResult;
 
 import static com.mongodb.client.model.Filters.*;
 
@@ -214,5 +215,22 @@ public class DatabaseManager {
 		return result;
 		
 		
+	}
+	
+	public int deleteTrips(String city, LocalDate fromDate, LocalDate toDate) {
+		Bson filter = and(eq("city", city), gte("time.timestamp_start", fromDate), lte("time.timestamp_start", toDate));
+		DeleteResult result = database.getCollection("trip").deleteMany(filter);
+		return (int)result.getDeletedCount();
+	}
+	
+	public List<String> getCities(){
+		List<String> cities = new ArrayList<String>();
+		
+		MongoCursor<String> cursor = database.getCollection("trip").distinct("city", String.class).iterator();
+		while(cursor.hasNext()) {
+			cities.add(cursor.next());
+		}
+		
+		return cities;
 	}
 }
