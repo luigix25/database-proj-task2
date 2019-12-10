@@ -72,6 +72,13 @@
         <artifactId>mongodb-driver-sync</artifactId>
         <version>3.11.2</version>
   </dependency>
+  <!-- Serialize to JSON java object -->
+	<dependency>
+	    <groupId>org.codehaus.jackson</groupId>
+	    <artifactId>jackson-mapper-asl</artifactId>
+	    <version>1.9.13</version>
+	</dependency>
+  
   
   </dependencies>
 </project>

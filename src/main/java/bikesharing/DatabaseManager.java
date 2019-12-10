@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.codehaus.jackson.map.*;
 
 import com.mongodb.client.*;
 import com.mongodb.client.model.Accumulators;
@@ -69,8 +70,8 @@ public class DatabaseManager {
 	}
 	
 	public boolean insertDocument(String data, String collectionName) {
-		Document document = Document.parse(data);
 		try {
+			Document document = Document.parse(data);
 			database.getCollection(collectionName).insertOne(document);
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -228,6 +229,7 @@ public class DatabaseManager {
 				user.setSurname((String)document.get("surname"));
 				user.setStatus((String)document.get("status"));
 				users.add(user);
+				
 		}
 		
 		return users;
@@ -250,6 +252,21 @@ public class DatabaseManager {
 		}
 		
 		return cities;
+	}
+	
+	public boolean insertUser(User user) {
+		
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		try {
+			String json = ow.writeValueAsString(user);
+			System.out.println(json);
+			return insertDocument(json,"user");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} 
+				
 	}
 
 }
