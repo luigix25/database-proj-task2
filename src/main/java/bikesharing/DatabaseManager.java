@@ -3,7 +3,6 @@ package bikesharing;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -105,7 +104,7 @@ public class DatabaseManager {
 		
 		//return true;
 	}
-	
+		
 	
 	private boolean fixDate(String collectionName) {
 		
@@ -213,6 +212,25 @@ public class DatabaseManager {
 		
 		return result;
 		
+	}
+	
+	public List<User> getAllUsers(){
+		
+		List<User> users = new ArrayList<User>();
+		MongoCursor<Document> cursor = database.getCollection("user").find().iterator();
+		while(cursor.hasNext()) {
+				Document document = cursor.next();
+				User user = new User();
+				user.setId((String)document.get("id"));
+				user.setName((String)document.get("name"));
+				user.setSurname((String)document.get("surname"));
+				user.setStatus((String)document.get("status"));
+				users.add(user);
+		}
+		
+		return users;
+		
 		
 	}
+	
 }

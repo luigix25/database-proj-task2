@@ -13,12 +13,8 @@ import bikesharing.FileManager;
 import bikesharing.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -40,6 +36,12 @@ public class IndexController {
 	@FXML private DatePicker toDate;
 	@FXML private Label deleteStatus;
 
+	@FXML private TableView<User> tableView;
+	@FXML private TableColumn<User,String> columnID;
+	@FXML private TableColumn<User,String> columnName;
+	@FXML private TableColumn<User,String> columnSurname;
+	@FXML private TableColumn<User,String> columnStatus;
+
 	private String tripsCollection = "members";
 
 	private File currentFile;
@@ -53,8 +55,28 @@ public class IndexController {
 			tabPane.getTabs().remove(manageDatasetTab);
 			tabPane.getTabs().remove(employeesTab);
 		}
+		
+		initTable();
 	}
 
+	private void initTable() {
+
+		columnID.setCellValueFactory(new PropertyValueFactory<User, String>("id"));
+		columnName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
+		columnSurname.setCellValueFactory(new PropertyValueFactory<User, String>("surname"));
+		columnStatus.setCellValueFactory(new PropertyValueFactory<User, String>("status"));
+		loadUsers();
+		
+		
+	}
+
+	private void loadUsers() {
+		List<User> users = DatabaseManager.getInstance().getAllUsers();
+		tableView.getItems().setAll(users);
+
+		
+	}
+	
 	@FXML
 	private void choose(ActionEvent event) {
 		Stage stage = StageUtils.getStage(event);
@@ -122,4 +144,5 @@ public class IndexController {
 
 		// TODO -- check the city selection
 	}
+		
 }

@@ -86,12 +86,12 @@
                <children>
                   <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <TableView prefHeight="367.0" prefWidth="400.0">
+                        <TableView fx:id="tableView" prefHeight="367.0" prefWidth="400.0">
                           <columns>
-                            <TableColumn prefWidth="75.0" text="ID" />
-                            <TableColumn prefWidth="107.0" text="Name" />
-                              <TableColumn prefWidth="106.0" text="Surname" />
-                              <TableColumn prefWidth="110.0" text="Status" />
+                            <TableColumn fx:id="columnID" prefWidth="75.0" text="ID" />
+                            <TableColumn fx:id="columnName" prefWidth="107.0" text="Name" />
+                              <TableColumn fx:id="columnSurname" prefWidth="106.0" text="Surname" />
+                              <TableColumn fx:id="columnStatus" prefWidth="110.0" text="Status" />
                           </columns>
                         </TableView>
                         <VBox prefHeight="367.0" prefWidth="202.0" spacing="12.0">
