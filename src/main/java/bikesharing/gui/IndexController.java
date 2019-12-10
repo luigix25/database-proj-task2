@@ -211,5 +211,10 @@ public class IndexController {
         alert.setHeaderText("Success: " + deletedTrips + " document(s) have been deleted");
         alert.showAndWait();
 	}
+	
+	@FXML
+	private void hire() {
+		StageUtils.open(this, null, "/gui/user.fxml");
+	}
 		
 }
