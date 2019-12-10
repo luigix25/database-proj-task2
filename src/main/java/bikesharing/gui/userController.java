@@ -32,7 +32,7 @@ public class userController {
 		user.setSurname(surname.getText());
 		
 		dm = DatabaseManager.getInstance();
-		if (!dm.insertUser()) {
+		if (!dm.insertUser(user)) {
 			status.setText("Database error: impossible to insert a new user");
 		} else {
 			Alert alert = new Alert(AlertType.INFORMATION);
