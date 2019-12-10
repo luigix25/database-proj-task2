@@ -100,7 +100,8 @@ public class IndexController {
 		//FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
 		//fileChooser.getExtensionFilters().add(extFilter);
 		currentFile = fileChooser.showOpenDialog(stage);
-		path.setText(currentFile.getPath());
+		if(currentFile != null)
+			path.setText(currentFile.getPath());
 	}
 
 	@FXML
