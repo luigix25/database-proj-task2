@@ -95,6 +95,7 @@
                               <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="182.0" text="Promote" />
                               <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="182.0" text="Demote" />
                               <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="182.0" text="Fire" />
+                              <Button mnemonicParsing="false" onAction="#hire" prefHeight="27.0" prefWidth="182.0" text="Hire" />
                            </children>
                            <HBox.margin>
                               <Insets />
