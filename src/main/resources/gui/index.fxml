@@ -93,8 +93,8 @@
                         <VBox prefHeight="367.0" prefWidth="202.0" spacing="12.0">
                            <children>
                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Actions" />
-                              <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="182.0" text="Promote" />
-                              <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="182.0" text="Demote" />
+                              <Button mnemonicParsing="false" onAction="#promoteUser" prefHeight="27.0" prefWidth="182.0" text="Promote" />
+                              <Button mnemonicParsing="false" onAction="#demoteUser" prefHeight="27.0" prefWidth="182.0" text="Demote" />
                               <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="182.0" text="Fire" />
                            </children>
                            <HBox.margin>
