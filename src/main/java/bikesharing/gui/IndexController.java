@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.swing.JOptionPane;
 
 import bikesharing.DatabaseManager;
@@ -28,7 +27,7 @@ public class IndexController {
 	@FXML private Tab manageDatasetTab;
 	@FXML private Tab employeesTab;
 	@FXML private Tab statisticsTab;
-	
+
 	/* Manage Dataset */
 	/* Insert new Tips */
 	@FXML private Button chooseButton;
@@ -40,12 +39,12 @@ public class IndexController {
 	@FXML private DatePicker fromDate;
 	@FXML private DatePicker toDate;
 	@FXML private Label deleteStatus;
-	
+
 	private String tripsCollection = "members";
-	
+
 	private File currentFile;
 	private User user;
-	
+
 	public void setSession(User user) {
 		this.user = user;
 		// TODO -- remove
@@ -55,7 +54,7 @@ public class IndexController {
 			tabPane.getTabs().remove(employeesTab);
 		}
 	}
-	
+
 	@FXML
 	private void choose(ActionEvent event) {
 		Stage stage = StageUtils.getStage(event);
@@ -66,17 +65,17 @@ public class IndexController {
 		currentFile = fileChooser.showOpenDialog(stage);
 		path.setText(currentFile.getPath());
 	}
-	
+
 	@FXML
 	private void load() {
 		loadStatus.setText("");
-		
+
 		if (currentFile == null) {
 			loadStatus.setText("Please choose the file to load.");
 			return;
 		}
-		
-		/* TODO -- check the mime type: unfortunately it is based on the file extension 
+
+		/* TODO -- check the mime type: unfortunately it is based on the file extension
 		try {
 			System.out.println(currentFile.toURI().toURL().openConnection().getContentType());
 			if (!currentFile.toURI().toURL().openConnection().getContentType().equals("text/plain")) {
@@ -88,7 +87,7 @@ public class IndexController {
 			e.printStackTrace();
 		}
 		*/
-			
+
 		FileManager fm = new FileManager(this.currentFile.toURI());
 		List<String>data = fm.readLines();
 		DatabaseManager dm = DatabaseManager.getInstance();
@@ -99,21 +98,21 @@ public class IndexController {
 		else
 			JOptionPane.showMessageDialog(null, "Success");
 	}
-	
+
 	@FXML
 	private void delete() {
 		deleteStatus.setText("");
-		
+
 		if (fromDate.getValue() == null) {
 			deleteStatus.setText("Please enter the start date.");
 			return;
 		}
-		
+
 		if (toDate.getValue() == null) {
 			deleteStatus.setText("Please enter the end date.");
 			return;
 		}
-		
+
 		// TODO -- check the city selection
 	}
 }
