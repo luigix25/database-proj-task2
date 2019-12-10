@@ -13,14 +13,14 @@ public class FileManager {
 		filePath = Paths.get(path);
 	}
 	
-	public List<String> readLines() {
+	public List<String> readLines() throws Exception {
 		
 		List<String> lines;
 		try {
 			lines = Files.readAllLines(filePath);
 		} catch(Exception e) {
-			e.printStackTrace();
-			return null;
+			System.err.println("[ReadLines] Error reading file");
+			throw new Exception("Error Reading File");
 		}
 				
 		return lines;

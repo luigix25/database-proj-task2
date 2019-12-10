@@ -89,7 +89,14 @@ public class IndexController {
 		*/
 
 		FileManager fm = new FileManager(this.currentFile.toURI());
-		List<String>data = fm.readLines();
+		List<String> data;
+		
+		try {
+			data = fm.readLines();
+		} catch (Exception e) {
+			return;
+		}
+		
 		DatabaseManager dm = DatabaseManager.getInstance();
 		if (!dm.insertBatch(data, tripsCollection)) {
 			JOptionPane.showMessageDialog(null, "Error");

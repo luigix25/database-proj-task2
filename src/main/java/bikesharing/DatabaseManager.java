@@ -88,7 +88,7 @@ public class DatabaseManager {
 			try {
 				doc = Document.parse(json);
 			} catch(Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 				return false;
 			}
 			documents.add(doc);
