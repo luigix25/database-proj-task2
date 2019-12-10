@@ -1,14 +1,18 @@
 package bikesharing.gui;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.bson.Document;
 
 import bikesharing.DatabaseManager;
 import bikesharing.FileManager;
 import bikesharing.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -39,6 +43,8 @@ public class IndexController {
 	@FXML private TableColumn<User,String> columnName;
 	@FXML private TableColumn<User,String> columnSurname;
 	@FXML private TableColumn<User,String> columnStatus;
+	
+	@FXML private BarChart<String, Integer> barChart;
 
 	private String tripsCollection = "members";
 
@@ -66,6 +72,8 @@ public class IndexController {
 		}
 		
 		initTable();
+		initChart();
+		
 	}
 
 	private void initTable() {
@@ -76,6 +84,22 @@ public class IndexController {
 		columnStatus.setCellValueFactory(new PropertyValueFactory<User, String>("status"));
 		loadUsers();
 		
+		
+	}
+	
+	private void initChart() {
+		
+		List<Document> data = DatabaseManager.getInstance().tripsForEachCity("members");
+
+        XYChart.Series<String,Integer> series1 = new XYChart.Series<String, Integer>();
+        series1.setName("2003");
+        
+        for(Document document : data) {
+            series1.getData().add(new XYChart.Data<String, Integer>((String)document.get("city"), (Integer)document.get("trips")));
+        	
+        }
+	
+        barChart.getData().add(series1);
 		
 	}
 
