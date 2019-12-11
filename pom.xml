@@ -57,28 +57,25 @@
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
-      <version>11</version>
-  </dependency>
-  <!-- FXML -->
-
-  <dependency>
+      <version>13</version>
+    </dependency>
+    <!-- FXML -->
+    <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-fxml</artifactId>
       <version>13</version>
-  </dependency>
-  <!-- MongoDB -->
-  <dependency>
+    </dependency>
+    <!-- MongoDB -->
+    <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongodb-driver-sync</artifactId>
         <version>3.11.2</version>
-  </dependency>
-  <!-- Serialize to JSON java object -->
+    </dependency>
+    <!-- Serialize to JSON java object -->
 	<dependency>
 	    <groupId>org.codehaus.jackson</groupId>
 	    <artifactId>jackson-mapper-asl</artifactId>
 	    <version>1.9.13</version>
 	</dependency>
-  
-  
   </dependencies>
 </project>
