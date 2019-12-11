@@ -38,10 +38,10 @@ public class IndexController {
 	@FXML private Label deleteStatus;
 
 	@FXML private TableView<User> tableView;
-	@FXML private TableColumn<User,String> columnID;
 	@FXML private TableColumn<User,String> columnName;
 	@FXML private TableColumn<User,String> columnSurname;
 	@FXML private TableColumn<User,String> columnStatus;
+	@FXML private TableColumn<User, String> columnUsername;
 	
 	@FXML private BarChart<String, Integer> barChart;
 
@@ -77,10 +77,10 @@ public class IndexController {
 
 	private void initTable() {
 
-		columnID.setCellValueFactory(new PropertyValueFactory<User, String>("id"));
 		columnName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
 		columnSurname.setCellValueFactory(new PropertyValueFactory<User, String>("surname"));
 		columnStatus.setCellValueFactory(new PropertyValueFactory<User, String>("status"));
+		columnUsername.setCellValueFactory(new PropertyValueFactory<User, String>("username"));
 		loadUsers();
 		
 		
@@ -132,6 +132,8 @@ public class IndexController {
 		User user = tableView.getSelectionModel().getSelectedItem();
 		if(user == null)
 			return;
+		
+		System.out.println(user);
 				
 		dm.promoteUser(user);
 		loadUsers();
@@ -149,6 +151,12 @@ public class IndexController {
 		dm.demoteUser(user);
 		loadUsers();
 		
+	}
+	
+	@FXML
+	private void hireUser() {
+		UserController ctrl = (UserController) StageUtils.open(this, null, "/gui/user.fxml");
+		ctrl.init(this);
 	}
 
 	@FXML
@@ -209,12 +217,6 @@ public class IndexController {
         alert.setTitle("Success");
         alert.setHeaderText("Success: " + deletedTrips + " document(s) have been deleted");
         alert.showAndWait();
-	}
-	
-	@FXML
-	private void hire() {
-		UserController ctrl = (UserController) StageUtils.open(this, null, "/gui/user.fxml");
-		ctrl.init(this);
 	}
 		
 }

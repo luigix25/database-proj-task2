@@ -1,18 +1,15 @@
 package bikesharing;
 
+import java.util.Date;
+
 public class User {
-	private String id;
 	private String name;
 	private String surname;
+	private String username;
 	private String password;
 	private String status;
+	private Date createdAt;
 	
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}
@@ -24,6 +21,12 @@ public class User {
 	}
 	public void setSurname(String surname) {
 		this.surname = surname;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	public String getPassword() {
 		return password;
@@ -37,8 +40,14 @@ public class User {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(Date date) {
+		this.createdAt = date;
+	}
 	
 	public String toString() {
-		return "< "+getId()+" "+getName()+" "+getSurname()+" "+getStatus()+" >";
+		return "< "+name+" "+surname+ " "+username+" "+status+" >";
 	}
 }

@@ -28,7 +28,7 @@
                   <Insets />
                </VBox.margin>
             </Text>
-            <TextField fx:id="id" maxWidth="200.0" promptText="ID" />
+            <TextField fx:id="username" maxWidth="200.0" promptText="Username" />
             <PasswordField fx:id="password" maxWidth="200.0" promptText="Password" />
             <Button mnemonicParsing="false" onAction="#login" text="Login" />
             <Text fx:id="status" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" />

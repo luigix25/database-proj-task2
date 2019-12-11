@@ -56,13 +56,13 @@ public class DatabaseManager {
 		instance.mongoClient.close();
 	}
 	
-	public User login(String id, String password) {
-		Document d = database.getCollection("user").find(and(eq("id", id), eq("password", password))).first();
+	public User login(String username, String password) {
+		Document d = database.getCollection("user").find(and(eq("username", username), eq("password", password))).first();
 		if (d != null) {
 			User user = new User();
-			user.setId(d.getString("id"));
 			user.setName(d.getString("name"));
 			user.setSurname(d.getString("surname"));
+			user.setUsername(d.getString("username"));
 			user.setStatus(d.getString("status"));
 			return user;
 		}
@@ -224,10 +224,10 @@ public class DatabaseManager {
 		while(cursor.hasNext()) {
 				Document document = cursor.next();
 				User user = new User();
-				user.setId((String)document.get("id"));
 				user.setName((String)document.get("name"));
 				user.setSurname((String)document.get("surname"));
 				user.setStatus((String)document.get("status"));
+				user.setUsername((String)document.get("username"));
 				users.add(user);
 				
 		}
@@ -269,7 +269,7 @@ public class DatabaseManager {
 	}
 	
 	public boolean promoteUser(User user) {
-		Document filter = new Document("id",user.getId());
+		Document filter = new Document("username",user.getUsername());
 		String currentLevel = (String)user.getStatus();
 		String newLevel = null;
 		
@@ -294,7 +294,7 @@ public class DatabaseManager {
 	}
 	
 	public boolean demoteUser(User user) {
-		Document filter = new Document("id",user.getId());
+		Document filter = new Document("username",user.getUsername());
 		String currentLevel = (String)user.getStatus();
 		String newLevel = null;
 		

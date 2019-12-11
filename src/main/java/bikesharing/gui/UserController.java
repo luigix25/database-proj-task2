@@ -23,6 +23,8 @@ public class UserController {
 	
 	@FXML
 	private void insertUser() {
+		status.setText("");
+		
 		if (name.getText().isEmpty()) {
 			status.setText("Please enter the name");
 			return;
@@ -36,8 +38,9 @@ public class UserController {
 		User user = new User();
 		user.setName(name.getText());
 		user.setSurname(surname.getText());
+		user.setUsername(name.getText().toLowerCase() + surname.getText().toLowerCase());
 		user.setStatus("S");
-		user.setPassword("farzaneh");
+		user.setPassword("pwd");
 		
 		dm = DatabaseManager.getInstance();
 		if (!dm.insertUser(user)) {

@@ -41,7 +41,12 @@
                         </Text>
                         <HBox spacing="6.0">
                            <children>
-                              <ChoiceBox fx:id="citySelector" prefHeight="27.0" prefWidth="165.0" />
+                              <HBox>
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="27.0" prefWidth="35.0" text="City:" />
+                                    <ChoiceBox fx:id="citySelector" prefHeight="27.0" prefWidth="165.0" />
+                                 </children>
+                              </HBox>
                               <HBox>
                                  <children>
                                     <Label alignment="CENTER_RIGHT" prefHeight="27.0" prefWidth="44.0" text="From:" />
@@ -84,10 +89,10 @@
                      <children>
                         <TableView fx:id="tableView" prefHeight="367.0" prefWidth="400.0">
                           <columns>
-                            <TableColumn fx:id="columnID" prefWidth="75.0" text="ID" />
-                            <TableColumn fx:id="columnName" prefWidth="107.0" text="Name" />
-                              <TableColumn fx:id="columnSurname" prefWidth="106.0" text="Surname" />
-                              <TableColumn fx:id="columnStatus" prefWidth="110.0" text="Status" />
+                            <TableColumn fx:id="columnName" editable="false" prefWidth="133.0" text="Name" />
+                              <TableColumn fx:id="columnSurname" editable="false" prefWidth="139.0" text="Surname" />
+                              <TableColumn fx:id="columnStatus" editable="false" prefWidth="125.0" text="Status" />
+                              <TableColumn fx:id="columnUsername" editable="false" prefWidth="133.0" text="Username" visible="false" />
                           </columns>
                         </TableView>
                         <VBox prefHeight="367.0" prefWidth="202.0" spacing="12.0">
@@ -96,7 +101,7 @@
                               <Button mnemonicParsing="false" onAction="#promoteUser" prefHeight="27.0" prefWidth="182.0" text="Promote" />
                               <Button mnemonicParsing="false" onAction="#demoteUser" prefHeight="27.0" prefWidth="182.0" text="Demote" />
                               <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="182.0" text="Fire" />
-                              <Button mnemonicParsing="false" onAction="#hire" prefHeight="27.0" prefWidth="182.0" text="Hire" />
+                              <Button mnemonicParsing="false" onAction="#hireUser" prefHeight="27.0" prefWidth="182.0" text="Hire" />
                            </children>
                            <HBox.margin>
                               <Insets />
