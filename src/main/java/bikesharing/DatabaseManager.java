@@ -320,5 +320,31 @@ public class DatabaseManager {
 		return true;
 		
 	}
+	
+	
+
+	public boolean fire(User user) {
+		
+		Bson filter = eq("username",user.getUsername());
+		String currentLevel = (String)user.getStatus();
+		
+		if(currentLevel.equals("A")) {
+			System.out.println("Firing is not permitted");
+			return false;
+		
+			}
+		else {
+			DeleteResult result = database.getCollection("user").deleteOne(filter);
+			if( (int)result.getDeletedCount()==0)
+				return false;	
+		}
+		
+		return true;
+			
+			
+			
+		
+	}	
+	
 
 }
