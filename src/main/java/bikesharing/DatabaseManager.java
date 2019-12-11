@@ -23,15 +23,18 @@ public class DatabaseManager {
 
 	private static DatabaseManager instance = null;
 	
-	//private final String mongoURL = "mongodb://localhost:27017";
-	private final String hostname = "dutcher.robinodds.it";
+	/*private final String hostname = "dutcher.robinodds.it";
 	private final String username = "root";
 	private final String password = "prova";
-
 	private final String portNumber = "27017";
-	private final String mongoURL = "mongodb://"+username+":"+password+"@"+hostname+":"+portNumber+"/?authSource=admin";
 	
+	private final String mongoURL = "mongodb://"+username+":"+password+"@"+hostname+":"+portNumber+"/?authSource=admin";*/
 	
+	// TODO should we create here a MongoServer object? ;-)
+
+	//private final String mongoURL = "mongodb://192.168.56.205:27017,192.168.56.205:27018,192.168.56.205:27019/?replicaSet=BSSReplica"; 
+	private final String mongoURL = "mongodb://dutcher.robinodds.it:27018,dutcher.robinodds.it:27019,dutcher.robinodds.it:27020/?replicaSet=BSSReplica";
+		
 	private final String databaseName = "ducange";
 	
 	private MongoClient mongoClient;
