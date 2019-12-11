@@ -44,6 +44,7 @@ public class IndexController {
 	@FXML private TableColumn<User, String> columnUsername;
 	
 	@FXML private BarChart<String, Integer> barChart;
+	@FXML private Label status;
 
 	private String tripsCollection = "members";
 
@@ -157,6 +158,28 @@ public class IndexController {
 	private void hireUser() {
 		UserController ctrl = (UserController) StageUtils.open(this, null, "/gui/user.fxml");
 		ctrl.init(this);
+	}
+	
+	@FXML
+	private void fire(ActionEvent event) {
+		User user = tableView.getSelectionModel().getSelectedItem();
+		status.setText("");
+		
+		
+		if(user == null) {
+			status.setText("please select an employee");
+			return;
+		}
+		
+		System.out.println(user);
+				
+		if(dm.fire(user))
+			System.out.print("fired successfully:)");
+		else
+			status.setText("fire is not permitted");
+		
+		loadUsers();
+		
 	}
 
 	@FXML
