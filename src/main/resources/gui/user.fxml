@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bikesharing.gui.UserController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bikesharing.gui.UserController">
    <children>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -18,7 +21,7 @@
             <Label lineSpacing="4.0" prefHeight="66.0" prefWidth="552.0" text="The credentials will be generated automatically: the username is the concatenation of the name and surname lowercase, the password is the default one. The new employee is inserted as a staff member." wrapText="true" />
             <TextField fx:id="name" promptText="Name" />
             <TextField fx:id="surname" promptText="Surname" />
-            <Button mnemonicParsing="false" onAction="#insertUser" text="Create" />
+            <Button defaultButton="true" mnemonicParsing="false" onAction="#insertUser" text="Create" />
             <Label fx:id="status" alignment="CENTER" prefHeight="17.0" prefWidth="734.0" textFill="RED" />
             <Label alignment="CENTER" prefHeight="17.0" prefWidth="653.0" text="© 2020 WBP Bike Sharing System">
                <font>
