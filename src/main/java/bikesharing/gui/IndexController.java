@@ -1,7 +1,7 @@
 package bikesharing.gui;
 
 import java.io.File;
-import java.util.List;
+import java.util.*;
 
 import org.bson.Document;
 
@@ -171,12 +171,20 @@ public class IndexController {
 			return;
 		}
 		
-		System.out.println(user);
-				
-		if(dm.fire(user))
-			System.out.print("fired successfully:)");
-		else
-			status.setText("fire is not permitted");
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Confirm Fire");
+        alert.setHeaderText("Fire an employee");
+        alert.setContentText("Confirm?");
+        Optional<ButtonType> result = alert.showAndWait();
+        
+        if (result.get() == ButtonType.OK) {
+			System.out.println(user);
+	
+			if(dm.fire(user))
+				System.out.print("fired successfully:)");
+			else
+				status.setText("fire is not permitted");
+        }
 		
 		loadUsers();
 		
