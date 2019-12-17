@@ -167,13 +167,13 @@ public class IndexController {
 		
 		
 		if(user == null) {
-			status.setText("please select an employee");
+			status.setText("Please select an employee");
 			return;
 		}
 		
 		Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Confirm Fire");
-        alert.setHeaderText("Fire an employee");
+        alert.setHeaderText("Are you sure to fire " + user.getName() + " " + user.getSurname() + "?");
         alert.setContentText("Confirm?");
         Optional<ButtonType> result = alert.showAndWait();
         
