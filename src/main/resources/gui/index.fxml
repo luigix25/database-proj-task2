@@ -136,17 +136,23 @@
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-                  <BarChart fx:id="barChart" layoutX="151.0" layoutY="48.0" prefHeight="253.0" prefWidth="298.0">
-                    <xAxis>
-                      <CategoryAxis side="BOTTOM" />
-                    </xAxis>
-                    <yAxis>
-                      <NumberAxis side="LEFT" />
-                    </yAxis>
-                  </BarChart>
+
                   <ChoiceBox fx:id="choiceCity" layoutX="14.0" layoutY="21.0" prefWidth="150.0" />
                   <ChoiceBox fx:id="choiceYear" layoutX="192.0" layoutY="21.0" prefWidth="150.0" />
                   <Button layoutX="390.0" layoutY="21.0" mnemonicParsing="false" onAction="#filter" text="Filter" />
+                  <HBox layoutX="34.0" layoutY="57.0">
+                     <children>
+                        <BarChart fx:id="barChart" layoutX="34.0" layoutY="57.0" prefHeight="253.0" prefWidth="298.0">
+                          <xAxis>
+                            <CategoryAxis side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis side="LEFT" />
+                          </yAxis>
+                        </BarChart>
+                        <PieChart fx:id="pieChart" layoutX="332.0" layoutY="68.0" prefHeight="231.0" prefWidth="233.0" />
+                     </children>
+                  </HBox>
                </children></AnchorPane>
       </content>
     </Tab>

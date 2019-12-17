@@ -233,6 +233,31 @@ public class DatabaseManager {
 		
 	}
 	
+	public List<Document> tripsPerGender(String collectionName){
+		List<Bson> projections = new ArrayList<Bson>();
+		projections.add(Projections.excludeId());
+		projections.add(Projections.include("count"));
+		projections.add(new Document("gender","$_id"));
+		
+		List<Bson> pipeline = Arrays.asList(
+				Aggregates.group("$rider.gender", Accumulators.sum("count", 1)),
+				Aggregates.project(Projections.fields(projections))
+		);
+		
+		MongoCollection<Document> collection = database.getCollection(collectionName);
+		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
+		ArrayList<Document> result = new ArrayList<Document>();
+		
+		while(cursor.hasNext()) {
+			result.add(cursor.next());
+		}
+		
+		cursor.close();
+		System.out.println(result.toString());
+		
+		return result;
+	}
+	
 	public List<User> getAllUsers(){
 		
 		List<User> users = new ArrayList<User>();
