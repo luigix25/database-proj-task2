@@ -228,7 +228,6 @@ public class DatabaseManager {
 		}
 		
 		cursor.close();
-		System.out.println(result.toString());
 		
 		return result;
 		
