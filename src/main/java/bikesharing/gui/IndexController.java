@@ -42,38 +42,38 @@ public class IndexController {
 	@FXML private TableColumn<User,String> columnSurname;
 	@FXML private TableColumn<User,String> columnStatus;
 	@FXML private TableColumn<User, String> columnUsername;
-	
+
 	@FXML private BarChart<String, Integer> barChart;
 	@FXML private Label status;
 
-	private String tripsCollection = "members";
+	private String tripsCollection = "trip";
 
 	private File currentFile;
 	private User user;
-	
+
 	private DatabaseManager dm;
-	
+
 	public void init(User user) {
 		dm = DatabaseManager.getInstance();
 		setSession(user);
 		setUpCitySelector();
 	}
-	
+
 	private void setSession(User user) {
 		this.user = user;
-		
+
 		if (this.user.getStatus().equals("C")) {
 			tabPane.getTabs().remove(employeesTab);
 		}
-		
+
 		if (this.user.getStatus().equals("S")) {
 			tabPane.getTabs().remove(manageDatasetTab);
 			tabPane.getTabs().remove(employeesTab);
 		}
-		
+
 		initTable();
 		initChart();
-		
+
 	}
 
 	private void initTable() {
@@ -83,39 +83,40 @@ public class IndexController {
 		columnStatus.setCellValueFactory(new PropertyValueFactory<User, String>("status"));
 		columnUsername.setCellValueFactory(new PropertyValueFactory<User, String>("username"));
 		loadUsers();
-		
-		
+
+
 	}
-	
+
 	private void initChart() {
-		
-		List<Document> data = DatabaseManager.getInstance().tripsForEachCity("members");
+
+		List<Document> data = DatabaseManager.getInstance().tripsForEachCity("trip");
 
         XYChart.Series<String,Integer> series1 = new XYChart.Series<String, Integer>();
         series1.setName("2003");
-        
+
         for(Document document : data) {
             series1.getData().add(new XYChart.Data<String, Integer>((String)document.get("city"), (Integer)document.get("trips")));
-        	
+
         }
-	
+
         barChart.getData().add(series1);
-		
+
 	}
 
 	public void loadUsers() {
 		List<User> users = DatabaseManager.getInstance().getAllUsers();
 		tableView.getItems().setAll(users);
 
-		
+
 	}
-	
+
 	private void setUpCitySelector() {
 		List<String> cities = dm.getCities();
+		citySelector.getItems().clear();
 		for (String city : cities)
 			citySelector.getItems().add(city);
 	}
-	
+
 	@FXML
 	private void choose(ActionEvent event) {
 		Stage stage = StageUtils.getStage(event);
@@ -127,7 +128,7 @@ public class IndexController {
 		if(currentFile != null)
 			path.setText(currentFile.getPath());
 	}
-	
+
 	@FXML
 	private void promoteUser(ActionEvent event) {
 		status.setText("");
@@ -136,16 +137,16 @@ public class IndexController {
 			status.setText("Please select an employee");
 			return;
 		}
-		
+
 		System.out.println(user);
-				
+
 		if (!dm.promoteUser(user))
 			status.setText("Cannot perform this action on this employee");
 		else
 			loadUsers();
-		
+
 	}
-	
+
 	@FXML
 	private void demoteUser(ActionEvent event) {
 		status.setText("");
@@ -154,51 +155,51 @@ public class IndexController {
 			status.setText("Please select an employee");
 			return;
 		}
-		
+
 		System.out.println(user);
-		
+
 		if (!dm.demoteUser(user))
 			status.setText("Cannot perform this action on this employee");
 		else
 			loadUsers();
-		
+
 	}
-	
+
 	@FXML
 	private void hireUser() {
 		status.setText("");
 		UserController ctrl = (UserController) StageUtils.open(this, null, "/gui/user.fxml");
 		ctrl.init(this);
 	}
-	
+
 	@FXML
 	private void fire(ActionEvent event) {
 		User user = tableView.getSelectionModel().getSelectedItem();
 		status.setText("");
-		
-		
+
+
 		if(user == null) {
 			status.setText("Please select an employee");
 			return;
 		}
-		
+
 		Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Confirm Fire");
         alert.setHeaderText("Are you sure to fire " + user.getName() + " " + user.getSurname() + "?");
         alert.setContentText("Confirm?");
         Optional<ButtonType> result = alert.showAndWait();
-        
+
         if (result.get() == ButtonType.OK) {
 			System.out.println(user);
-	
+
 			if(dm.fire(user))
 				System.out.print("fired successfully:)");
 			else
 				status.setText("fire is not permitted");
         }
-		
+
 		loadUsers();
-		
+
 	}
 
 	@FXML
@@ -212,18 +213,20 @@ public class IndexController {
 
 		FileManager fm = new FileManager(this.currentFile.toURI());
 		List<String> data;
-		
+
 		try {
 			data = fm.readLines();
 		} catch (Exception e) {
 			return;
 		}
-		
+
 		if (!dm.insertBatch(data, tripsCollection)) {
 			loadStatus.setText("Impossible to load this file. Check the format.");
 			return;
 		}
 		
+		setUpCitySelector();
+
 		Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Success");
         alert.setHeaderText("Dataset successfully imported");
@@ -233,7 +236,7 @@ public class IndexController {
 	@FXML
 	private void delete() {
 		deleteStatus.setText("");
-		
+
 		if (citySelector.getValue() == null) {
 			deleteStatus.setText("Please select the city.");
 			return;
@@ -248,17 +251,19 @@ public class IndexController {
 			deleteStatus.setText("Please enter the end date.");
 			return;
 		}
-		
+
 		int deletedTrips = dm.deleteTrips(citySelector.getValue().toString(), fromDate.getValue(), toDate.getValue());
 		if (deletedTrips == 0) {
 			deleteStatus.setText("0 documents have been deleted.");
 			return;
 		}
 		
+		setUpCitySelector();
+
 		Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Success");
         alert.setHeaderText("Success: " + deletedTrips + " document(s) have been deleted");
         alert.showAndWait();
 	}
-		
+
 }
