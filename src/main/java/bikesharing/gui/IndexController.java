@@ -73,8 +73,6 @@ public class IndexController {
 		initTable();
 		initChart();
 		initPieChart();
-
-		
 				
 	}
 
@@ -122,7 +120,10 @@ public class IndexController {
 	
 	private void initPieChart() {
 		List<Document> data = dm.tripsPerGender("trip");
-		
+		populatePieChart(data);
+	}
+	
+	private void populatePieChart(List<Document> data) {
 		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
 		for (Document document : data) {
 			String gender = (document.getString("gender") == null) ? "U" : (document.getString("gender"));
@@ -316,24 +317,35 @@ public class IndexController {
 
 	@FXML
 	private void filter(ActionEvent event) {
+		String year_string = choiceYear.getValue();
+		List<Document> gender_list = null;
 		
-		if(choiceCity.getValue().equals("All")) {				// I don't want to filter
+		// clear old data chart
+		barChart.getData().clear();
+		pieChart.getData().clear();
+		
+		if(choiceCity.getValue().equals("All") && year_string.equals("All")) {
 			initChart();
+			initPieChart();
 			return;
 		}
 		
-		String year_string = choiceYear.getValue();
-		if(year_string.equals("All")) {
-			//TODO: gestire errore
-			return;
+		else if(choiceCity.getValue().equals("All") && !year_string.equals("All")) {
+			gender_list = dm.tripsPerGender(Integer.parseInt(year_string), "trip");
+		}
+		
+		else if(!choiceCity.getValue().equals("All") && year_string.equals("All")) {
+			gender_list = dm.tripsPerGender(choiceCity.getValue(), "trip");
+		}
+		
+		else {
+			gender_list = dm.tripsPerGender(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
 		}
 		
 		int year = Integer.parseInt(year_string);
 		String city = choiceCity.getValue();
 		
 		List<Document> trips_list = dm.tripsPerCityYear(city, year, "trip");
-
-		barChart.getData().clear();
 		
 		for(int i=1;i<=12;i++) {
 			XYChart.Series<String,Integer> series1 = new XYChart.Series<String, Integer>();
@@ -350,11 +362,13 @@ public class IndexController {
 
 	        }
 		    
-	        barChart.getData().add(series1);
-
-		    
+	        barChart.getData().add(series1); 
 			
 		}
+		
+		if (gender_list != null)
+			populatePieChart(gender_list);
+		
 		
 		/*for(Document document : trips) {
             series1.getData().add(new XYChart.Data<String, Integer>((String)document.get("city"), (Integer)document.get("trips")));
