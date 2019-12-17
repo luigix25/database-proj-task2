@@ -130,32 +130,43 @@ public class IndexController {
 	
 	@FXML
 	private void promoteUser(ActionEvent event) {
+		status.setText("");
 		User user = tableView.getSelectionModel().getSelectedItem();
-		if(user == null)
+		if(user == null) {
+			status.setText("Please select an employee");
 			return;
+		}
 		
 		System.out.println(user);
 				
-		dm.promoteUser(user);
-		loadUsers();
+		if (!dm.promoteUser(user))
+			status.setText("Cannot perform this action on this employee");
+		else
+			loadUsers();
 		
 	}
 	
 	@FXML
 	private void demoteUser(ActionEvent event) {
+		status.setText("");
 		User user = tableView.getSelectionModel().getSelectedItem();
-		if(user == null)
+		if(user == null) {
+			status.setText("Please select an employee");
 			return;
+		}
 		
 		System.out.println(user);
 		
-		dm.demoteUser(user);
-		loadUsers();
+		if (!dm.demoteUser(user))
+			status.setText("Cannot perform this action on this employee");
+		else
+			loadUsers();
 		
 	}
 	
 	@FXML
 	private void hireUser() {
+		status.setText("");
 		UserController ctrl = (UserController) StageUtils.open(this, null, "/gui/user.fxml");
 		ctrl.init(this);
 	}

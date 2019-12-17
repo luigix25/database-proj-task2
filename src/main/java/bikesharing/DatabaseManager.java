@@ -285,20 +285,24 @@ public class DatabaseManager {
 		String newLevel = null;
 		
 		if(currentLevel.equals("A")) {
-			return true;
+			return false;
 		} else if(currentLevel.equals("S")) {
 			System.out.println("Promoting to Collaborator");
 			newLevel = "C";
 		} else if(currentLevel.equals("C")) {
-			return true; 
+			return false; 
 		}
 		
 		List<Bson> pipeline = Arrays.asList(
 				Aggregates.addFields(new Field<String>("status",newLevel))
 		);
 		
-		
-		database.getCollection("user").updateOne(filter, pipeline);
+		try {
+			database.getCollection("user").updateOne(filter, pipeline);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		
 		return true;
 		
@@ -310,20 +314,24 @@ public class DatabaseManager {
 		String newLevel = null;
 		
 		if(currentLevel.equals("A")) {
-			return true;
+			return false;
 		} else if(currentLevel.equals("C")) {
 			System.out.println("Demoting to Collaborator");
 			newLevel = "S";
 		} else if(currentLevel.equals("S")) {
-			return true; 
+			return false; 
 		}
 		
 		List<Bson> pipeline = Arrays.asList(
 				Aggregates.addFields(new Field<String>("status",newLevel))
 		);
 		
-		
-		database.getCollection("user").updateOne(filter, pipeline);
+		try {
+			database.getCollection("user").updateOne(filter, pipeline);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		
 		return true;
 		
