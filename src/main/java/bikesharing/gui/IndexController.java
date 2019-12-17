@@ -48,7 +48,7 @@ public class IndexController {
 
 
 	@FXML private ChoiceBox<String> choiceCity;
-	@FXML private ChoiceBox<Integer> choiceYear;
+	@FXML private ChoiceBox<String> choiceYear;
 
 	
 
@@ -64,10 +64,12 @@ public class IndexController {
 		setSession(user);
 		
 		setUpCitySelector();
+		setUpYearSelector();
 		
 		initTable();
 		initChart();
 		
+				
 	}
 
 	private void setSession(User user) {
@@ -98,9 +100,10 @@ public class IndexController {
 	private void initChart() {
 
 		List<Document> data = DatabaseManager.getInstance().tripsForEachCity("trip");
+        barChart.getData().clear();
 
         XYChart.Series<String,Integer> series1 = new XYChart.Series<String, Integer>();
-        series1.setName("2003");
+        series1.setName("Global Trips");
 
         for(Document document : data) {
             series1.getData().add(new XYChart.Data<String, Integer>((String)document.get("city"), (Integer)document.get("trips")));
@@ -110,7 +113,7 @@ public class IndexController {
         barChart.getData().add(series1);
 
 	}
-
+	
 	public void loadUsers() {
 		List<User> users = DatabaseManager.getInstance().getAllUsers();
 		tableView.getItems().setAll(users);
@@ -121,8 +124,27 @@ public class IndexController {
 	private void setUpCitySelector() {
 		List<String> cities = dm.getCities();
 		citySelector.getItems().clear();
-		for (String city : cities)
+		choiceCity.getItems().clear();
+		
+		choiceCity.getItems().add("All");
+		choiceCity.setValue("All");
+		
+		for (String city : cities) {
 			citySelector.getItems().add(city);
+			choiceCity.getItems().add(city);
+		}
+	}
+	
+	private void setUpYearSelector() {
+		List<Integer> years = dm.getYears();
+		choiceYear.getItems().clear();
+		
+		choiceYear.getItems().add("All");
+		choiceYear.setValue("All");
+		
+		for (Integer year : years) {
+			choiceYear.getItems().add(year.toString());
+		}
 	}
 
 	@FXML
@@ -274,4 +296,56 @@ public class IndexController {
         alert.showAndWait();
 	}
 
+	@FXML
+	private void filter(ActionEvent event) {
+		
+		if(choiceCity.getValue().equals("All")) {				// I don't want to filter
+			initChart();
+			return;
+		}
+		
+		String year_string = choiceYear.getValue();
+		if(year_string.equals("All")) {
+			//TODO: gestire errore
+			return;
+		}
+		
+		int year = Integer.parseInt(year_string);
+		String city = choiceCity.getValue();
+		
+		List<Document> trips_list = dm.tripsPerCityYear(city, year, "trip");
+
+		barChart.getData().clear();
+		
+		for(int i=1;i<=12;i++) {
+			XYChart.Series<String,Integer> series1 = new XYChart.Series<String, Integer>();
+		    series1.setName(Integer.toString(i));
+		    
+		    
+		    for(Document document : trips_list) {
+
+			    int month = document.getInteger("month");
+			    int trips = (document.getInteger("trips"));
+			    
+		    	if(month == i)
+		    		series1.getData().add(new XYChart.Data<String, Integer>(Integer.toString(month), trips));
+
+	        }
+		    
+	        barChart.getData().add(series1);
+
+		    
+			
+		}
+		
+		/*for(Document document : trips) {
+            series1.getData().add(new XYChart.Data<String, Integer>((String)document.get("city"), (Integer)document.get("trips")));
+
+        }*/
+        
+
+		
+		
+	}
+	
 }

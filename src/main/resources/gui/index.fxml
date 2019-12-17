@@ -146,6 +146,7 @@
                   </BarChart>
                   <ChoiceBox fx:id="choiceCity" layoutX="14.0" layoutY="21.0" prefWidth="150.0" />
                   <ChoiceBox fx:id="choiceYear" layoutX="192.0" layoutY="21.0" prefWidth="150.0" />
+                  <Button layoutX="390.0" layoutY="21.0" mnemonicParsing="false" onAction="#filter" text="Filter" />
                </children></AnchorPane>
       </content>
     </Tab>

@@ -181,13 +181,12 @@ public class DatabaseManager {
 		}
 		
 		cursor.close();
-		System.out.println(result.toString());
 		
 		return result;
 		
 	}
 	
-	public List<Document> tripsPerCityYear(String city,int year,String collectionName){
+	public List<Document> tripsPerCityYear(String city,int year,String collectionName){		//on a monthly basis
 		
 		List<Bson> project = new ArrayList<Bson>();
 		project.add(Projections.excludeId());
@@ -290,7 +289,7 @@ public class DatabaseManager {
 		);
 		
 		
-		MongoCollection<Document> collection = database.getCollection("members");
+		MongoCollection<Document> collection = database.getCollection("trip");
 		
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 		
