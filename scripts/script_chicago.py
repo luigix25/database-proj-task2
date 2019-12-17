@@ -1,12 +1,12 @@
-import json 
+import json
 import datetime
 import csv
 
 timestamp_format 	= "%Y-%m-%d %H:%M:%S"
 city				= "Chicago"
-city_tag			= "CHI" 
+city_tag			= "CHI"
 
-with open('chicago_small.csv', newline='') as csvfile:
+with open('../datasets/chicago_small.csv') as csvfile:
 	reader = csv.DictReader(csvfile)
 	for row in reader:
 		normalized_row 	= {}
@@ -29,7 +29,7 @@ with open('chicago_small.csv', newline='') as csvfile:
 		space["longitude_start"] = row["longitude_start"]
 		space["longitude_end"] 	 = row["longitude_end"]
 
-		rider["gender"]			= row["gender"]
+		rider["gender"]			= 'M' if row["gender"] == 'Male' else 'F'
 		rider["type"]			= row["usertype"]
 
 		normalized_row["time"] 	= time
