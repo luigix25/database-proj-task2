@@ -153,6 +153,12 @@ public class DatabaseManager {
 		
 	}
 	
+	public List<Document> genderForCity(String city){
+		
+		return null;
+		
+	}
+	
 	public List<Document> tripsForEachCity(String collectionName){
 		List<Bson> project = new ArrayList<Bson>();
 		project.add(Projections.excludeId());
@@ -263,6 +269,40 @@ public class DatabaseManager {
 		}
 		
 		return cities;
+	}
+	
+	public List<Integer> getYears(){
+		List<Integer> years = new ArrayList<Integer>();
+		
+		ArrayList<Field<?>> addYear = new ArrayList<Field<?>>();
+		addYear.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
+		
+		List<Bson> pipeline = Arrays.asList(
+				//Add Year Field
+				Aggregates.addFields(addYear),
+				//Group by Year
+				Aggregates.group("$year",
+						//Renames the _id to year
+						new BsonField("year", new Document("$first","$year"))
+				),
+				//Sort ASC by year
+				Aggregates.sort(new Document("year",1))
+		);
+		
+		
+		MongoCollection<Document> collection = database.getCollection("members");
+		
+		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
+		
+		
+		while(cursor.hasNext()) {
+			years.add((Integer) cursor.next().get("year"));
+		}
+		
+		cursor.close();
+		
+		
+		return years;
 	}
 	
 	public boolean insertUser(User user) {

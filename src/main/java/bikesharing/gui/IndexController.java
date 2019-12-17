@@ -46,6 +46,11 @@ public class IndexController {
 	@FXML private BarChart<String, Integer> barChart;
 	@FXML private Label status;
 
+
+	@FXML private ChoiceBox<String> choiceCity;
+	@FXML private ChoiceBox<Integer> choiceYear;
+
+	
 	private String tripsCollection = "members";
 
 	private File currentFile;
@@ -56,7 +61,12 @@ public class IndexController {
 	public void init(User user) {
 		dm = DatabaseManager.getInstance();
 		setSession(user);
+		
 		setUpCitySelector();
+		
+		initTable();
+		initChart();
+		
 	}
 	
 	private void setSession(User user) {
@@ -70,9 +80,6 @@ public class IndexController {
 			tabPane.getTabs().remove(manageDatasetTab);
 			tabPane.getTabs().remove(employeesTab);
 		}
-		
-		initTable();
-		initChart();
 		
 	}
 
