@@ -118,7 +118,7 @@
                               <Button mnemonicParsing="false" onAction="#demoteUser" prefHeight="27.0" prefWidth="182.0" text="Demote" />
                               <Button mnemonicParsing="false" onAction="#fire" prefHeight="27.0" prefWidth="182.0" text="Fire" />
                               <Button mnemonicParsing="false" onAction="#hireUser" prefHeight="27.0" prefWidth="182.0" text="Hire" />
-                              <Label fx:id="status" prefHeight="17.0" prefWidth="169.0" textFill="RED" />
+                              <Label fx:id="status" alignment="TOP_LEFT" lineSpacing="4.0" prefHeight="169.0" prefWidth="161.0" textFill="RED" wrapText="true" />
                            </children>
                            <HBox.margin>
                               <Insets />
