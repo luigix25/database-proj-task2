@@ -8,9 +8,13 @@ import org.bson.Document;
 import bikesharing.DatabaseManager;
 import bikesharing.FileManager;
 import bikesharing.User;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.PieChart;
+import javafx.scene.chart.PieChart.Data;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -44,6 +48,7 @@ public class IndexController {
 	@FXML private TableColumn<User, String> columnUsername;
 	
 	@FXML private BarChart<String, Integer> barChart;
+	@FXML private PieChart pieChart;
 	@FXML private Label status;
 
 	private String tripsCollection = "members";
@@ -57,6 +62,8 @@ public class IndexController {
 		dm = DatabaseManager.getInstance();
 		setSession(user);
 		setUpCitySelector();
+		
+		initPieChart();
 	}
 	
 	private void setSession(User user) {
@@ -89,7 +96,7 @@ public class IndexController {
 	
 	private void initChart() {
 		
-		List<Document> data = DatabaseManager.getInstance().tripsForEachCity("members");
+		List<Document> data = dm.tripsForEachCity("members");
 
         XYChart.Series<String,Integer> series1 = new XYChart.Series<String, Integer>();
         series1.setName("2003");
@@ -101,6 +108,18 @@ public class IndexController {
 	
         barChart.getData().add(series1);
 		
+	}
+	
+	private void initPieChart() {
+		List<Document> data = dm.tripsPerGender("trip");
+		
+		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+		for (Document document : data) {
+			String gender = (document.getString("gender") == null) ? "U" : (document.getString("gender"));
+			pieChartData.add(new PieChart.Data(gender, Double.valueOf(document.getInteger("count"))));
+		}
+		
+		pieChart.setData(pieChartData);
 	}
 
 	public void loadUsers() {
