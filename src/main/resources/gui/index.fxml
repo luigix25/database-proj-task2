@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
@@ -18,7 +24,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bikesharing.gui.IndexController">
+<TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bikesharing.gui.IndexController">
   <tabs>
       <Tab fx:id="manageDatasetTab" text="Manage Dataset">
          <content>
@@ -112,7 +118,7 @@
                               <Button mnemonicParsing="false" onAction="#demoteUser" prefHeight="27.0" prefWidth="182.0" text="Demote" />
                               <Button mnemonicParsing="false" onAction="#fire" prefHeight="27.0" prefWidth="182.0" text="Fire" />
                               <Button mnemonicParsing="false" onAction="#hireUser" prefHeight="27.0" prefWidth="182.0" text="Hire" />
-                              <Label fx:id="status" prefHeight="17.0" prefWidth="169.0" textFill="RED" />
+                              <Label fx:id="status" alignment="TOP_LEFT" lineSpacing="4.0" prefHeight="169.0" prefWidth="161.0" textFill="RED" wrapText="true" />
                            </children>
                            <HBox.margin>
                               <Insets />
