@@ -160,6 +160,7 @@ public class DatabaseManager {
 		
 	}
 	
+	//AnyTime
 	public List<Document> tripsForEachCity(String collectionName){
 		List<Bson> project = new ArrayList<Bson>();
 		project.add(Projections.excludeId());
@@ -171,6 +172,85 @@ public class DatabaseManager {
 				Aggregates.project(Projections.fields(project))		
 		);
 		
+		MongoCollection<Document> collection = database.getCollection(collectionName);
+		
+		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
+		
+		ArrayList<Document> result = new ArrayList<Document>();
+		
+		while(cursor.hasNext()) {
+			result.add(cursor.next());
+		}
+		
+		cursor.close();
+		
+		return result;
+		
+	}
+	
+	//For a Given Year
+	public List<Document> tripsForEachCity(int year, String collectionName){
+		List<Bson> project = new ArrayList<Bson>();
+		project.add(Projections.excludeId());
+		project.add(Projections.include("trips"));
+		project.add(new Document("city","$_id"));
+		
+		ArrayList<Field<?>> addYear = new ArrayList<Field<?>>();
+		addYear.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
+		
+		List<Bson> pipeline = Arrays.asList(
+				Aggregates.addFields(addYear),
+				Aggregates.match(new Document("year",year)),
+				Aggregates.group("$city", Accumulators.sum("trips", 1)),
+				Aggregates.project(Projections.fields(project))		
+		);
+		
+		MongoCollection<Document> collection = database.getCollection(collectionName);
+		
+		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
+		
+		ArrayList<Document> result = new ArrayList<Document>();
+		
+		while(cursor.hasNext()) {
+			result.add(cursor.next());
+		}
+		
+		cursor.close();
+		
+		return result;
+		
+	}
+	
+	//Trips for a given city
+	//TOOD: can be optimized!!!
+	
+	public List<Document> tripsForACity(String city, String collectionName){
+		List<Bson> project = new ArrayList<Bson>();
+		project.add(Projections.excludeId());
+		project.add(Projections.include("city"));
+		project.add(Projections.include("month"));
+		project.add(Projections.include("year"));
+		project.add(Projections.include("trips"));
+
+		ArrayList<Field<?>> addDates = new ArrayList<Field<?>>();
+		addDates.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
+		addDates.add(new Field<Document>("month",new Document("$month","$time.timestamp_start")));
+		
+		List<Bson> pipeline = Arrays.asList(
+				//Filter by City
+				Aggregates.match(new Document("city",city)),
+				Aggregates.addFields(addDates),
+				//Group by Month
+				Aggregates.group("$month", Accumulators.sum("trips", 1),
+						//Otherwise these fields will be lost
+						new BsonField("year", new Document("$first","$year")),
+						new BsonField("city", new Document("$first","$city")),
+						new BsonField("month", new Document("$first","$month"))
+				),
+				//Sort ASC by month
+				Aggregates.sort(new Document("month",1))
+		);
+
 		MongoCollection<Document> collection = database.getCollection(collectionName);
 		
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
@@ -256,7 +336,6 @@ public class DatabaseManager {
 		}
 		
 		cursor.close();
-		System.out.println(result.toString());
 		
 		return result;
 	}
@@ -282,7 +361,6 @@ public class DatabaseManager {
 		}
 		
 		cursor.close();
-		System.out.println(result.toString());
 		
 		return result;
 	}
@@ -309,7 +387,6 @@ public class DatabaseManager {
 		}
 		
 		cursor.close();
-		System.out.println(result.toString());
 		
 		return result;
 	}
@@ -334,7 +411,6 @@ public class DatabaseManager {
 		}
 		
 		cursor.close();
-		System.out.println(result.toString());
 		
 		return result;
 	}

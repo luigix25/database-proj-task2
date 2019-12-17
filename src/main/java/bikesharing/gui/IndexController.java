@@ -317,35 +317,42 @@ public class IndexController {
 	private void filter(ActionEvent event) {
 		String year_string = choiceYear.getValue();
 		List<Document> gender_list = null;
+		List<Document> trips_list = null;
 		
 		// clear old data chart
 		barChart.getData().clear();
 		pieChart.getData().clear();
+		
+		int populateType = 0;
 		
 		if(choiceCity.getValue().equals("All") && year_string.equals("All")) {
 			initChart();
 			initPieChart();
 			return;
 		}
-		
+		//Year Only
 		else if(choiceCity.getValue().equals("All") && !year_string.equals("All")) {
 			gender_list = dm.tripsPerGender(Integer.parseInt(year_string), "trip");
+			trips_list = dm.tripsForEachCity(Integer.parseInt(year_string), "trip");
+			populateType = 1;
 		}
-		
+		//City Only
 		else if(!choiceCity.getValue().equals("All") && year_string.equals("All")) {
 			gender_list = dm.tripsPerGender(choiceCity.getValue(), "trip");
+			trips_list = dm.tripsForACity(choiceCity.getValue(), "trip");
 		}
-		
+		//Both
 		else {
 			gender_list = dm.tripsPerGender(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
+			trips_list = dm.tripsPerCityYear(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
+
 		}
 		
 		
 
-		int year = Integer.parseInt(year_string);
-		String city = choiceCity.getValue();
-		
-		List<Document> trips_list = dm.tripsPerCityYear(city, year, "trip");
+		//int year = Integer.parseInt(year_string);
+		//String city = choiceCity.getValue();
+		/*
 		
 		for(int i=1;i<=12;i++) {
 			XYChart.Series<String,Integer> series1 = new XYChart.Series<String, Integer>();
@@ -368,9 +375,59 @@ public class IndexController {
 		    
 	        barChart.getData().add(series1);	
 		}
+		*/
 		
 		if (gender_list != null)
 			populatePieChart(gender_list);
+		
+		if(trips_list != null) {
+			if(populateType == 0)
+				populateBarChartPerMonth(trips_list);
+			else
+				populateBarChartPerCity(trips_list);
+		}
+	}
+	
+	private void populateBarChartPerMonth(List<Document> data) {
+		
+		for(int i=1;i<=12;i++) {
+			XYChart.Series<String,Integer> series1 = new XYChart.Series<String, Integer>();
+		    series1.setName(Integer.toString(i));
+		    series1.getData().clear();
+		    
+		    for(Document document : data) {
+
+			    int month = document.getInteger("month");
+			    int trips = (document.getInteger("trips"));
+			    
+		    	if(month == i)
+		    		series1.getData().add(new XYChart.Data<String, Integer>(Integer.toString(month), trips));
+
+	        }
+		    
+		    if(series1.getData().isEmpty() == true) {
+	    		series1.getData().add(new XYChart.Data<String, Integer>(Integer.toString(i), 0));
+		    }
+		    
+	        barChart.getData().add(series1);	
+		}
+		
+	}
+	
+	private void populateBarChartPerCity(List<Document>data) {
+		
+		barChart.getData().clear();
+
+        XYChart.Series<String,Integer> series1 = new XYChart.Series<String, Integer>();
+        series1.setName("Global Trips");
+
+        for(Document document : data) {
+            series1.getData().add(new XYChart.Data<String, Integer>((String)document.get("city"), (Integer)document.get("trips")));
+
+        }
+
+        barChart.getData().add(series1);
+		
 		
 	}
 	
