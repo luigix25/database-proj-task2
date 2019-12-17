@@ -54,7 +54,6 @@ public class IndexController {
 	@FXML private ChoiceBox<String> choiceCity;
 	@FXML private ChoiceBox<String> choiceYear;
 
-	
 
 	private String tripsCollection = "trip";
 
@@ -74,7 +73,7 @@ public class IndexController {
 		initChart();
 		initPieChart();
 
-		
+		barChart.setAnimated(false);
 				
 	}
 
@@ -328,6 +327,8 @@ public class IndexController {
 			return;
 		}
 		
+		
+
 		int year = Integer.parseInt(year_string);
 		String city = choiceCity.getValue();
 		
@@ -338,7 +339,7 @@ public class IndexController {
 		for(int i=1;i<=12;i++) {
 			XYChart.Series<String,Integer> series1 = new XYChart.Series<String, Integer>();
 		    series1.setName(Integer.toString(i));
-		    
+		    series1.getData().clear();
 		    
 		    for(Document document : trips_list) {
 
@@ -349,6 +350,10 @@ public class IndexController {
 		    		series1.getData().add(new XYChart.Data<String, Integer>(Integer.toString(month), trips));
 
 	        }
+		    
+		    if(series1.getData().isEmpty() == true) {
+	    		series1.getData().add(new XYChart.Data<String, Integer>(Integer.toString(i), 0));
+		    }
 		    
 	        barChart.getData().add(series1);
 

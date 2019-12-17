@@ -24,7 +24,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bikesharing.gui.IndexController">
+<TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bikesharing.gui.IndexController">
   <tabs>
       <Tab fx:id="manageDatasetTab" text="Manage Dataset">
          <content>
@@ -83,7 +83,7 @@
                               <Label fx:id="deleteStatus" prefHeight="27.0" prefWidth="487.0" textFill="RED" />
                            </children>
                         </HBox>
-                        <Label alignment="CENTER" prefHeight="17.0" prefWidth="633.0" text="© 2020 WBP Bike Sharing System">
+                        <Label alignment="CENTER" prefHeight="17.0" prefWidth="868.0" text="© 2020 WBP Bike Sharing System">
                            <font>
                               <Font size="10.0" />
                            </font>
@@ -136,21 +136,25 @@
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-
-                  <ChoiceBox fx:id="choiceCity" layoutX="14.0" layoutY="21.0" prefWidth="150.0" />
-                  <ChoiceBox fx:id="choiceYear" layoutX="192.0" layoutY="21.0" prefWidth="150.0" />
-                  <Button layoutX="390.0" layoutY="21.0" mnemonicParsing="false" onAction="#filter" text="Filter" />
-                  <HBox layoutX="34.0" layoutY="57.0">
+                  <HBox layoutX="14.0" layoutY="21.0" spacing="20.0">
                      <children>
-                        <BarChart fx:id="barChart" layoutX="34.0" layoutY="57.0" prefHeight="253.0" prefWidth="298.0">
+      
+                        <ChoiceBox fx:id="choiceCity" layoutX="14.0" layoutY="21.0" prefWidth="150.0" />
+                        <ChoiceBox fx:id="choiceYear" layoutX="192.0" layoutY="21.0" prefWidth="150.0" />
+                        <Button layoutX="390.0" layoutY="21.0" mnemonicParsing="false" onAction="#filter" text="Filter" />
+                     </children>
+                  </HBox>
+                  <HBox layoutX="-2.0" layoutY="57.0" prefHeight="510.0" prefWidth="800.0">
+                     <children>
+                        <BarChart fx:id="barChart" layoutX="34.0" layoutY="57.0" prefHeight="510.0" prefWidth="500.0">
                           <xAxis>
-                            <CategoryAxis side="BOTTOM" />
+                            <CategoryAxis fx:id="categoryAxis" side="BOTTOM" />
                           </xAxis>
                           <yAxis>
                             <NumberAxis side="LEFT" />
                           </yAxis>
                         </BarChart>
-                        <PieChart fx:id="pieChart" layoutX="332.0" layoutY="68.0" prefHeight="231.0" prefWidth="233.0" />
+                        <PieChart fx:id="pieChart" layoutX="332.0" layoutY="68.0" prefHeight="308.0" prefWidth="250.0" />
                      </children>
                   </HBox>
                </children></AnchorPane>
