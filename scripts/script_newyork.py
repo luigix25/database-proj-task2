@@ -1,21 +1,29 @@
 import json
 import datetime
 import csv
+import re
 
 timestamp_format 	= "%Y-%m-%d %H:%M:%S"
 city				= "New York"
 city_tag			= "NYC"
 
-with open('../datasets/newyork_small.csv', newline='') as csvfile:
+with open('../datasets/newyork.csv', newline='') as csvfile:
 	reader = csv.DictReader(csvfile)
+	count = 0
 	for row in reader:
 		normalized_row 	= {}
 		time 			= {}
 		space 			= {}
 		rider 			= {}
 
-		time["timestamp_start"] = row["pickup_datetime"]
-		time["timestamp_end"] 	= row["dropoff_datetime"]
+		# substitute year to make data uniform
+		year = 2015 + count % 4
+		count += 1
+		time["timestamp_start"] = re.sub('201\\d', str(year), row["pickup_datetime"])
+		time["timestamp_end"] 	= re.sub('201\\d', str(year), row["dropoff_datetime"])
+
+		#time["timestamp_start"] = row["pickup_datetime"]
+		#time["timestamp_end"] = row["dropoff_datetime"]
 
 		#start_station_id 	= row["start_station_id"][:-2]
 		#end_station_id 		= row["end_station_id"][:-2]

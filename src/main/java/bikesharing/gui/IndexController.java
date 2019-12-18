@@ -5,9 +5,7 @@ import java.util.*;
 
 import org.bson.Document;
 
-import bikesharing.DatabaseManager;
-import bikesharing.FileManager;
-import bikesharing.User;
+import bikesharing.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
@@ -18,6 +16,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import javafx.concurrent.Task;
 
 public class IndexController {
 	@FXML private TabPane tabPane;
@@ -31,6 +31,7 @@ public class IndexController {
 	@FXML private Button loadButton;
 	@FXML private Label path;
 	@FXML private Label loadStatus;
+	@FXML private ProgressIndicator loadIndicator;
 	/* Delete Trips */
 	@FXML private ChoiceBox<String> citySelector;
 	@FXML private DatePicker fromDate;
@@ -219,18 +220,42 @@ public class IndexController {
 		} catch (Exception e) {
 			return;
 		}
-
-		if (!dm.insertBatch(data, tripsCollection)) {
-			loadStatus.setText("Impossible to load this file. Check the format.");
-			return;
-		}
-		
-		setUpCitySelector();
-
-		Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Success");
-        alert.setHeaderText("Dataset successfully imported");
-        alert.showAndWait();
+        
+        loadIndicator.setProgress(-1.0);
+        loadStatus.setText("Loading dataset. This operation could take some minutes. Please wait...");
+        
+        Task<Boolean> task = new Task<Boolean>() {
+        	@Override
+        	public Boolean call() {
+        		dm.insertBatch(data, "trip");
+        		return true;
+        	}
+        };
+        
+        task.setOnSucceeded(e -> {
+        	Boolean result = task.getValue();
+        	
+        	if (result) {
+        		loadIndicator.setProgress(1.0);
+        		setUpCitySelector();
+        	
+	        	Alert alert = new Alert(AlertType.INFORMATION);
+	            alert.setTitle("Success");
+	            alert.setHeaderText("Task succeded");
+	            alert.setHeaderText("Dataset has been successfully imported in database");
+	            alert.showAndWait();
+        	}
+        	else {
+        		loadIndicator.setProgress(0.0);
+        		
+        		Alert alert = new Alert(AlertType.ERROR);
+        		alert.setTitle("Error");
+        		alert.setHeaderText("Task failed");
+        		alert.setContentText("An error occurred while importing the dataset");
+        	}
+        });
+        
+        new Thread(task).start();		
 	}
 
 	@FXML

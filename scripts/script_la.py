@@ -1,30 +1,35 @@
-import json 
+import json
 import datetime
 import csv
+import re
 
-current_timestamp_format 	= "%m/%d/%Y %H:%M"
+# current_timestamp_format 	= "%m/%d/%Y %H:%M"
+current_timestamp_format	= "%Y-%m-%d %H:%M:%S"
 standard_timestamp_format 	= "%Y-%m-%d %H:%M:%S"
 
 city				= "Los Angeles"
-city_tag			= "LA" 
+city_tag			= "LA"
 
-
-with open('la.csv', newline='') as csvfile:
+with open('../datasets/la.csv', newline='') as csvfile:
 	reader = csv.DictReader(csvfile)
+	count = 0
 	for row in reader:
+		count += 1
 		normalized_row 	= {}
 		time 			= {}
 		space 			= {}
 		rider 			= {}
 
-		time_start 	= datetime.datetime.strptime(row["start_time"],current_timestamp_format)
-		time_end 	= datetime.datetime.strptime(row["end_time"],current_timestamp_format)
+		# normalize year
+		year = 2015 + count % 4
+		time_start 	= datetime.datetime.strptime(re.sub('201\\d', str(year), row["start_time"]), current_timestamp_format)
+		time_end 	= datetime.datetime.strptime(re.sub('201\\d', str(year), row["end_time"]), current_timestamp_format)
 
 		time["timestamp_start"] = datetime.datetime.strftime(time_start,standard_timestamp_format)
 		time["timestamp_end"] 	= datetime.datetime.strftime(time_end,standard_timestamp_format)
 
-		start_station_id 	= row["start_station_id"]
-		end_station_id 		= row["end_station_id"]
+		start_station_id 	= row["start_station"]
+		end_station_id 		= row["end_station"]
 
 		space["station_start"] 	= city_tag +":"+ start_station_id
 		space["station_end"] 	= city_tag +":"+ end_station_id
