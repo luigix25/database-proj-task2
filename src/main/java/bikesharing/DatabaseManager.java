@@ -14,6 +14,7 @@ import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.BsonField;
 import com.mongodb.client.model.Field;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.result.DeleteResult;
 
@@ -153,6 +154,13 @@ public class DatabaseManager {
 		
 	}
 	
+	public List<Document> genderForCity(String city){
+		
+		return null;
+		
+	}
+	
+	//AnyTime
 	public List<Document> tripsForEachCity(String collectionName){
 		List<Bson> project = new ArrayList<Bson>();
 		project.add(Projections.excludeId());
@@ -175,13 +183,91 @@ public class DatabaseManager {
 		}
 		
 		cursor.close();
-		System.out.println(result.toString());
 		
 		return result;
 		
 	}
 	
-	public List<Document> tripsPerCityYear(String city,int year,String collectionName){
+	//For a Given Year
+	public List<Document> tripsForEachCity(int year, String collectionName){
+		List<Bson> project = new ArrayList<Bson>();
+		project.add(Projections.excludeId());
+		project.add(Projections.include("trips"));
+		project.add(new Document("city","$_id"));
+		
+		ArrayList<Field<?>> addYear = new ArrayList<Field<?>>();
+		addYear.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
+		
+		List<Bson> pipeline = Arrays.asList(
+				Aggregates.addFields(addYear),
+				Aggregates.match(new Document("year",year)),
+				Aggregates.group("$city", Accumulators.sum("trips", 1)),
+				Aggregates.project(Projections.fields(project))		
+		);
+		
+		MongoCollection<Document> collection = database.getCollection(collectionName);
+		
+		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
+		
+		ArrayList<Document> result = new ArrayList<Document>();
+		
+		while(cursor.hasNext()) {
+			result.add(cursor.next());
+		}
+		
+		cursor.close();
+		
+		return result;
+		
+	}
+	
+	//Trips for a given city
+	//TOOD: can be optimized!!!
+	
+	public List<Document> tripsForACity(String city, String collectionName){
+		List<Bson> project = new ArrayList<Bson>();
+		project.add(Projections.excludeId());
+		project.add(Projections.include("city"));
+		project.add(Projections.include("month"));
+		project.add(Projections.include("year"));
+		project.add(Projections.include("trips"));
+
+		ArrayList<Field<?>> addDates = new ArrayList<Field<?>>();
+		addDates.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
+		addDates.add(new Field<Document>("month",new Document("$month","$time.timestamp_start")));
+		
+		List<Bson> pipeline = Arrays.asList(
+				//Filter by City
+				Aggregates.match(new Document("city",city)),
+				Aggregates.addFields(addDates),
+				//Group by Month
+				Aggregates.group("$month", Accumulators.sum("trips", 1),
+						//Otherwise these fields will be lost
+						new BsonField("year", new Document("$first","$year")),
+						new BsonField("city", new Document("$first","$city")),
+						new BsonField("month", new Document("$first","$month"))
+				),
+				//Sort ASC by month
+				Aggregates.sort(new Document("month",1))
+		);
+
+		MongoCollection<Document> collection = database.getCollection(collectionName);
+		
+		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
+		
+		ArrayList<Document> result = new ArrayList<Document>();
+		
+		while(cursor.hasNext()) {
+			result.add(cursor.next());
+		}
+		
+		cursor.close();
+		
+		return result;
+		
+	}
+	
+	public List<Document> tripsPerCityYear(String city,int year,String collectionName){		//on a monthly basis
 		
 		List<Bson> project = new ArrayList<Bson>();
 		project.add(Projections.excludeId());
@@ -222,10 +308,111 @@ public class DatabaseManager {
 		}
 		
 		cursor.close();
-		System.out.println(result.toString());
 		
 		return result;
 		
+	}
+	
+	public List<Document> tripsPerGender(String city, int year, String collectionName){
+		List<Bson> projections = new ArrayList<Bson>();
+		projections.add(Projections.excludeId());
+		projections.add(Projections.include("count"));
+		projections.add(new Document("gender","$_id"));
+		
+		List<Bson> pipeline = Arrays.asList(
+				Aggregates.match(Filters.eq("city", city)),
+				Aggregates.addFields(new Field<Document>("year",new Document("$year","$time.timestamp_start"))),
+				Aggregates.match(Filters.eq("year", year)),
+				Aggregates.group("$rider.gender", Accumulators.sum("count", 1)),
+				Aggregates.project(Projections.fields(projections))
+		);
+		
+		MongoCollection<Document> collection = database.getCollection(collectionName);
+		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
+		ArrayList<Document> result = new ArrayList<Document>();
+		
+		while(cursor.hasNext()) {
+			result.add(cursor.next());
+		}
+		
+		cursor.close();
+		
+		return result;
+	}
+	
+	public List<Document> tripsPerGender(String city, String collectionName){
+		List<Bson> projections = new ArrayList<Bson>();
+		projections.add(Projections.excludeId());
+		projections.add(Projections.include("count"));
+		projections.add(new Document("gender","$_id"));
+		
+		List<Bson> pipeline = Arrays.asList(
+				Aggregates.match(Filters.eq("city", city)),
+				Aggregates.group("$rider.gender", Accumulators.sum("count", 1)),
+				Aggregates.project(Projections.fields(projections))
+		);
+		
+		MongoCollection<Document> collection = database.getCollection(collectionName);
+		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
+		ArrayList<Document> result = new ArrayList<Document>();
+		
+		while(cursor.hasNext()) {
+			result.add(cursor.next());
+		}
+		
+		cursor.close();
+		
+		return result;
+	}
+	
+	public List<Document> tripsPerGender(int year, String collectionName){
+		List<Bson> projections = new ArrayList<Bson>();
+		projections.add(Projections.excludeId());
+		projections.add(Projections.include("count"));
+		projections.add(new Document("gender","$_id"));
+		
+		List<Bson> pipeline = Arrays.asList(
+				Aggregates.addFields(new Field<Document>("year",new Document("$year","$time.timestamp_start"))),
+				Aggregates.match(Filters.eq("year", year)),
+				Aggregates.group("$rider.gender", Accumulators.sum("count", 1)),
+				Aggregates.project(Projections.fields(projections))
+		);
+		
+		MongoCollection<Document> collection = database.getCollection(collectionName);
+		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
+		ArrayList<Document> result = new ArrayList<Document>();
+		
+		while(cursor.hasNext()) {
+			result.add(cursor.next());
+		}
+		
+		cursor.close();
+		
+		return result;
+	}
+	
+	public List<Document> tripsPerGender(String collectionName){
+		List<Bson> projections = new ArrayList<Bson>();
+		projections.add(Projections.excludeId());
+		projections.add(Projections.include("count"));
+		projections.add(new Document("gender","$_id"));
+		
+		List<Bson> pipeline = Arrays.asList(
+				Aggregates.group("$rider.gender", Accumulators.sum("count", 1)),
+				Aggregates.project(Projections.fields(projections))
+		);
+		
+		MongoCollection<Document> collection = database.getCollection(collectionName);
+		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
+		ArrayList<Document> result = new ArrayList<Document>();
+		
+		while(cursor.hasNext()) {
+			result.add(cursor.next());
+		}
+		
+		cursor.close();
+		
+		return result;
 	}
 	
 	public List<User> getAllUsers(){
@@ -263,6 +450,40 @@ public class DatabaseManager {
 		}
 		
 		return cities;
+	}
+	
+	public List<Integer> getYears(){
+		List<Integer> years = new ArrayList<Integer>();
+		
+		ArrayList<Field<?>> addYear = new ArrayList<Field<?>>();
+		addYear.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
+		
+		List<Bson> pipeline = Arrays.asList(
+				//Add Year Field
+				Aggregates.addFields(addYear),
+				//Group by Year
+				Aggregates.group("$year",
+						//Renames the _id to year
+						new BsonField("year", new Document("$first","$year"))
+				),
+				//Sort ASC by year
+				Aggregates.sort(new Document("year",1))
+		);
+		
+		
+		MongoCollection<Document> collection = database.getCollection("trip");
+		
+		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
+		
+		
+		while(cursor.hasNext()) {
+			years.add((Integer) cursor.next().get("year"));
+		}
+		
+		cursor.close();
+		
+		
+		return years;
 	}
 	
 	public boolean insertUser(User user) {

@@ -19,7 +19,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bikesharing.gui.IndexController">
+<TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bikesharing.gui.IndexController">
   <tabs>
       <Tab fx:id="manageDatasetTab" text="Manage Dataset">
          <content>
@@ -79,10 +79,13 @@
                               <Label fx:id="deleteStatus" prefHeight="27.0" prefWidth="487.0" textFill="RED" />
                            </children>
                         </HBox>
-                        <Label alignment="CENTER" prefHeight="17.0" prefWidth="633.0" text="© 2020 WBP Bike Sharing System">
+                        <Label alignment="CENTER" prefHeight="17.0" prefWidth="868.0" text="© 2020 WBP Bike Sharing System">
                            <font>
                               <Font size="10.0" />
                            </font>
+                           <VBox.margin>
+                              <Insets top="200.0" />
+                           </VBox.margin>
                         </Label>
                      </children>
                      <padding>
@@ -99,7 +102,7 @@
                <children>
                   <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <TableView fx:id="tableView" prefHeight="367.0" prefWidth="400.0">
+                        <TableView fx:id="tableView" minWidth="580.0" prefHeight="567.0" prefWidth="580.0">
                           <columns>
                             <TableColumn fx:id="columnName" editable="false" prefWidth="133.0" text="Name" />
                               <TableColumn fx:id="columnSurname" editable="false" prefWidth="139.0" text="Surname" />
@@ -107,14 +110,14 @@
                               <TableColumn fx:id="columnUsername" editable="false" prefWidth="133.0" text="Username" visible="false" />
                           </columns>
                         </TableView>
-                        <VBox prefHeight="367.0" prefWidth="202.0" spacing="12.0">
+                        <VBox prefHeight="567.0" prefWidth="435.0" spacing="12.0">
                            <children>
                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Actions" />
                               <Button mnemonicParsing="false" onAction="#promoteUser" prefHeight="27.0" prefWidth="182.0" text="Promote" />
                               <Button mnemonicParsing="false" onAction="#demoteUser" prefHeight="27.0" prefWidth="182.0" text="Demote" />
                               <Button mnemonicParsing="false" onAction="#fire" prefHeight="27.0" prefWidth="182.0" text="Fire" />
                               <Button mnemonicParsing="false" onAction="#hireUser" prefHeight="27.0" prefWidth="182.0" text="Hire" />
-                              <Label fx:id="status" alignment="TOP_LEFT" lineSpacing="4.0" prefHeight="169.0" prefWidth="161.0" textFill="RED" wrapText="true" />
+                              <Label fx:id="status" alignment="TOP_LEFT" lineSpacing="4.0" prefHeight="431.0" prefWidth="180.0" textFill="RED" wrapText="true" />
                            </children>
                            <HBox.margin>
                               <Insets />
@@ -132,14 +135,27 @@
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-                  <BarChart fx:id="barChart" layoutX="151.0" layoutY="48.0" prefHeight="253.0" prefWidth="298.0">
-                    <xAxis>
-                      <CategoryAxis side="BOTTOM" />
-                    </xAxis>
-                    <yAxis>
-                      <NumberAxis side="LEFT" />
-                    </yAxis>
-                  </BarChart>
+                  <HBox layoutX="14.0" layoutY="21.0" spacing="20.0">
+                     <children>
+
+                        <ChoiceBox fx:id="choiceCity" layoutX="14.0" layoutY="21.0" prefWidth="150.0" />
+                        <ChoiceBox fx:id="choiceYear" layoutX="192.0" layoutY="21.0" prefWidth="150.0" />
+                        <Button layoutX="390.0" layoutY="21.0" mnemonicParsing="false" onAction="#filter" text="Filter" />
+                     </children>
+                  </HBox>
+                  <HBox layoutX="-2.0" layoutY="57.0" prefHeight="510.0" prefWidth="800.0">
+                     <children>
+                        <BarChart fx:id="barChart" animated="false" layoutX="34.0" layoutY="57.0" prefHeight="510.0" prefWidth="500.0">
+                          <xAxis>
+                            <CategoryAxis fx:id="categoryAxis" side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis side="LEFT" />
+                          </yAxis>
+                        </BarChart>
+                        <PieChart fx:id="pieChart" animated="false" layoutX="332.0" layoutY="68.0" prefHeight="308.0" prefWidth="250.0" />
+                     </children>
+                  </HBox>
                </children></AnchorPane>
       </content>
     </Tab>
