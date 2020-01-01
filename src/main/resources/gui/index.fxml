@@ -2,9 +2,9 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.BarChart?>
-<?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
@@ -16,11 +16,13 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bikesharing.gui.IndexController">
+<TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bikesharing.gui.IndexController">
   <tabs>
       <Tab fx:id="manageDatasetTab" text="Manage Dataset">
          <content>
@@ -157,6 +159,13 @@
                         <PieChart fx:id="pieChart" animated="false" layoutX="332.0" layoutY="68.0" prefHeight="308.0" prefWidth="250.0" />
                      </children>
                   </HBox>
+                  <StackPane layoutX="588.0" layoutY="19.0" prefHeight="70.0" prefWidth="76.0" AnchorPane.bottomAnchor="478.0" AnchorPane.leftAnchor="588.0" AnchorPane.topAnchor="19.0">
+                     <children>
+                        <Circle fx:id="c1" fill="WHITE" radius="30.0" stroke="#9ce8b3" strokeWidth="6.0" style="-fx-stroke-dash-array: 28;" />
+                        <Circle fx:id="c2" fill="WHITE" radius="20.0" stroke="#1c683c" strokeWidth="5.0" style="-fx-stroke-dash-array: 15;" />
+                        <Circle fx:id="c3" fill="WHITE" radius="10.0" stroke="#64eb46" strokeWidth="4.0" style="-fx-stroke-dash-array: 7;" />
+                     </children>
+                  </StackPane>
                </children></AnchorPane>
       </content>
     </Tab>

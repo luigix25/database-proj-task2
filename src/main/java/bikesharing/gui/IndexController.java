@@ -6,6 +6,7 @@ import java.util.*;
 import org.bson.Document;
 
 import bikesharing.*;
+import javafx.animation.RotateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -16,10 +17,10 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
-
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
+import javafx.util.Duration;
 import javafx.concurrent.Task;
 
 public class IndexController {
@@ -35,6 +36,7 @@ public class IndexController {
 	@FXML private Label path;
 	@FXML private Label loadStatus;
 	@FXML private ProgressIndicator loadIndicator;
+	
 	/* Delete Trips */
 	@FXML private ChoiceBox<String> citySelector;
 	@FXML private DatePicker fromDate;
@@ -54,6 +56,11 @@ public class IndexController {
 
 	@FXML private ChoiceBox<String> choiceCity;
 	@FXML private ChoiceBox<String> choiceYear;
+	
+	@FXML private Circle c1;
+	@FXML private Circle c2;
+	@FXML private Circle c3;
+	
 
 
 	private String tripsCollection = "trip";
@@ -164,9 +171,23 @@ public class IndexController {
 			choiceYear.getItems().add(year.toString());
 		}
 	}
+	private void setRotate(Circle c, boolean reserve, int angles, int duration) {
+		
+		RotateTransition  rt = new RotateTransition(Duration.seconds(duration),c);
+		rt.setAutoReverse(reserve);
+		rt.setByAngle(angles);
+		rt.setDelay(Duration.seconds(0));
+		rt.setRate(3);
+		rt.setCycleCount(18);
+		rt.play();
+		
+		
+	}
+	
 
 	@FXML
 	private void choose(ActionEvent event) {
+		
 		Stage stage = StageUtils.getStage(event);
 		FileChooser fileChooser = new FileChooser();
 		// TODO -- remove this lines?
@@ -253,6 +274,7 @@ public class IndexController {
 	@FXML
 	private void load() {
 		loadStatus.setText("");
+		path.setText("");
 
 		if (currentFile == null) {
 			loadStatus.setText("Please choose the file to load.");
@@ -290,7 +312,9 @@ public class IndexController {
 	            alert.setTitle("Success");
 	            alert.setHeaderText("Task succeded");
 	            alert.setHeaderText("Dataset has been successfully imported in database");
+	           
 	            alert.showAndWait();
+	            loadStatus.setText("");
         	}
         	else {
         		loadIndicator.setProgress(0.0);
@@ -325,6 +349,8 @@ public class IndexController {
 		}
 
 		int deletedTrips = dm.deleteTrips(citySelector.getValue().toString(), fromDate.getValue(), toDate.getValue());
+	
+
 		if (deletedTrips == 0) {
 			deleteStatus.setText("0 documents have been deleted.");
 			return;
@@ -336,10 +362,25 @@ public class IndexController {
         alert.setTitle("Success");
         alert.setHeaderText("Success: " + deletedTrips + " document(s) have been deleted");
         alert.showAndWait();
+        //to clear selected date after deleting
+        fromDate.setValue(null);
+        toDate.setValue(null);
+       
 	}
+	
+	
+	
 
 	@FXML
 	private void filter(ActionEvent event) {
+		
+			// not complete yet، should be shown on screen before creating tables then disapear
+			setRotate(c1,true,360,10);
+			setRotate(c2,true,180,18);
+			setRotate(c3,true,145,24);
+		
+
+		
 		String year_string = choiceYear.getValue();
 		List<Document> gender_list = null;
 		List<Document> trips_list = null;
@@ -348,23 +389,36 @@ public class IndexController {
 		barChart.getData().clear();
 		pieChart.getData().clear();
 		
+		
+	
 		int populateType = 0;
+	
+		
+
+
+		
 		
 		if(choiceCity.getValue().equals("All") && year_string.equals("All")) {
+			
 			initChart();
 			initPieChart();
 			return;
+			
 		}
 		//Year Only
 		else if(choiceCity.getValue().equals("All") && !year_string.equals("All")) {
+			
 			gender_list = dm.tripsPerGender(Integer.parseInt(year_string), "trip");
 			trips_list = dm.tripsForEachCity(Integer.parseInt(year_string), "trip");
 			populateType = 1;
+		
 		}
 		//City Only
 		else if(!choiceCity.getValue().equals("All") && year_string.equals("All")) {
+			
 			gender_list = dm.tripsPerGender(choiceCity.getValue(), "trip");
 			trips_list = dm.tripsForACity(choiceCity.getValue(), "trip");
+		
 		}
 		//Both
 		else {
@@ -372,6 +426,9 @@ public class IndexController {
 			trips_list = dm.tripsPerCityYear(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
 
 		}
+		
+		
+		
 		
 		
 
@@ -411,6 +468,7 @@ public class IndexController {
 			else
 				populateBarChartPerCity(trips_list);
 		}
+		
 	}
 	
 	private void populateBarChartPerMonth(List<Document> data) {
