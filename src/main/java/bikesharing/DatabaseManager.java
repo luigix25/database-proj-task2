@@ -1,6 +1,8 @@
 package bikesharing;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -93,16 +95,34 @@ public class DatabaseManager {
 	}
 	
 	public boolean insertBatch(List<String>data, String collectionName) {
-		if (data == null)
+		if (data == null) {
+			System.out.println("No Data");
 			return false;
-		
+		}
+			
 		List<Document> documents = new ArrayList<Document>();
 		for(String json : data) {
 			Document doc;
 			try {
 				doc = Document.parse(json);
+				
+				Document time = (Document)doc.get("time");
+				
+				String ts_start = time.getString("timestamp_start");
+				String ts_end = time.getString("timestamp_end");
+				
+		        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		        
+		        LocalDateTime localDate_start = LocalDateTime.parse(ts_start,formatter);
+		        LocalDateTime localDate_end = LocalDateTime.parse(ts_end,formatter);       
+		        
+		        time.put("timestamp_start", localDate_start);
+		        time.put("timestamp_end", localDate_end);
+
+		        doc.put("time", time);
+		      		        
 			} catch(Exception e) {
-				//e.printStackTrace();
+				e.printStackTrace();
 				return false;
 			}
 			documents.add(doc);
@@ -114,51 +134,16 @@ public class DatabaseManager {
 			e.printStackTrace();
 			return false;
 		}
-		
-		return fixDate(collectionName);
-		
-		//return true;
-	}
-		
-	
-	private boolean fixDate(String collectionName) {
-		
-		MongoCollection<Document> collection = database.getCollection(collectionName);
-		
-		//"time.timestamp_end": {$not: {$type:9}}  filters all the non-date fields
-
-		Document filter = new Document("time.timestamp_end",new Document("$not",new Document("$type",9)));
-		
-
-		
-		//Updates all the fields inside the collection, so that they use the Date format, instead of String, parsing it using the specified format
-		
-		List<Bson> pipeline = Arrays.asList(
-				Aggregates.addFields(
-						new Field<Document>("time",
-								new Document("timestamp_start",new Document("$dateFromString",new Document("dateString", "$time.timestamp_start").append("format", "%Y-%m-%d %H:%M:%S")))
-								.append("timestamp_end",new Document("$dateFromString",new Document("dateString", "$time.timestamp_end").append("format", "%Y-%m-%d %H:%M:%S")))
-								)
-					
-				)
-		);
-		
-		try {
-			collection.updateMany(filter, pipeline);
-		} catch(Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-		
+				
 		return true;
-		
 	}
+		
 	
-	public List<Document> genderForCity(String city){
+	/*public List<Document> genderForCity(String city){
 		
 		return null;
 		
-	}
+	}*/
 	
 	//AnyTime
 	public List<Document> tripsForEachCity(String collectionName){

@@ -296,14 +296,13 @@ public class IndexController {
         Task<Boolean> task = new Task<Boolean>() {
         	@Override
         	public Boolean call() {
-        		dm.insertBatch(data, tripsCollection);
-        		return true;
+        		return dm.insertBatch(data, tripsCollection);
         	}
         };
         
         task.setOnSucceeded(e -> {
         	Boolean result = task.getValue();
-        	
+
         	if (result) {
         		loadIndicator.setProgress(1.0);
         		setUpCitySelector();
@@ -323,6 +322,10 @@ public class IndexController {
         		alert.setTitle("Error");
         		alert.setHeaderText("Task failed");
         		alert.setContentText("An error occurred while importing the dataset");
+        		
+	            alert.showAndWait();
+	            loadStatus.setText("");
+
         	}
         });
         
