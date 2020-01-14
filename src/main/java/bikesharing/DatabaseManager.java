@@ -11,6 +11,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.codehaus.jackson.map.*;
 
+import com.mongodb.ServerAddress;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
@@ -25,11 +26,11 @@ import static com.mongodb.client.model.Filters.*;
 public class DatabaseManager {
 
 	private static DatabaseManager instance = null;
-	
-	private final ReplicaHost[] hosts = {
-		new ReplicaHost("172.16.0.58"),
-		new ReplicaHost("172.16.0.59"),
-		new ReplicaHost("172.16.0.61")
+		
+	private final ServerAddress[] hosts = {
+		new ServerAddress("172.16.0.58",27017),
+		new ServerAddress("172.16.0.59",27017),
+		new ServerAddress("172.16.0.61",27017)
 	};
 	
 	private String mongoURL;
@@ -45,7 +46,7 @@ public class DatabaseManager {
 		/* prepare URL for connection */
 		mongoURL = "mongodb://";
 		for (int i = 0; i < hosts.length; ++i) {
-			mongoURL += hosts[i].getHostname() + ":" + Integer.toString(hosts[i].getPort());
+			mongoURL += hosts[i].getHost() + ":" + Integer.toString(hosts[i].getPort());
 			if (i != (hosts.length - 1)) mongoURL += ",";
 		}
 		mongoURL += "/?replicaSet=BSSReplica";
