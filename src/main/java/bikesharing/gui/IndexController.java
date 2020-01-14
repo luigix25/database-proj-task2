@@ -9,7 +9,6 @@ import org.bson.Document;
 import bikesharing.DatabaseManager;
 import bikesharing.FileManager;
 import bikesharing.User;
-import javafx.animation.RotateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -34,7 +33,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 public class IndexController {
 	@FXML private TabPane tabPane;
@@ -46,7 +44,6 @@ public class IndexController {
 	/* Insert new Tips */
 	@FXML private Button chooseButton;
 	@FXML private Button loadButton;
-	@FXML private ProgressIndicator loadIndicator;
 	
 	/* Delete Trips */
 	@FXML private ChoiceBox<String> citySelector;
@@ -64,6 +61,8 @@ public class IndexController {
 	@FXML private PieChart pieChart;
 
 	@FXML private Label status;
+	@FXML
+	private ProgressIndicator progressIndicator;
 
 	@FXML private ChoiceBox<String> choiceCity;
 	@FXML private ChoiceBox<String> choiceYear;
@@ -180,26 +179,12 @@ public class IndexController {
 			choiceYear.getItems().add(year.toString());
 		}
 	}
-	private void setRotate(Circle c, boolean reserve, int angles, int duration) {
-		
-		RotateTransition  rt = new RotateTransition(Duration.seconds(duration),c);
-		rt.setAutoReverse(reserve);
-		rt.setByAngle(angles);
-		rt.setDelay(Duration.seconds(0));
-		rt.setRate(3);
-		rt.setCycleCount(18);
-		rt.play();
-		
-		
-	}
-	
 
 	@FXML
 	private void choose(ActionEvent event) {
-		
 		Stage stage = StageUtils.getStage(event);
 		FileChooser fileChooser = new FileChooser();
-		// TODO -- remove this lines?
+		// TODO -- remove these lines? Do we want to actually check for the extension?
 		//FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
 		//fileChooser.getExtensionFilters().add(extFilter);
 		currentFile = fileChooser.showOpenDialog(stage);
@@ -282,8 +267,6 @@ public class IndexController {
 
 	@FXML
 	private void load() {
-		status.setText("");
-
 		if (currentFile == null) {
 			status.setText("Please choose the file to load.");
 			return;
@@ -298,7 +281,7 @@ public class IndexController {
 			return;
 		}
         
-        loadIndicator.setProgress(-1.0);
+		progressIndicator.setProgress(-1.0);
 		status.setText("Loading dataset. This operation could take some minutes. Please wait...");
         
         Task<Boolean> task = new Task<Boolean>() {
@@ -312,7 +295,7 @@ public class IndexController {
         	Boolean result = task.getValue();
 
         	if (result) {
-        		loadIndicator.setProgress(1.0);
+				progressIndicator.setProgress(1.0);
         		setUpCitySelector();
         	
 	        	Alert alert = new Alert(AlertType.INFORMATION);
@@ -324,7 +307,7 @@ public class IndexController {
 				status.setText("");
         	}
         	else {
-        		loadIndicator.setProgress(0.0);
+				progressIndicator.setProgress(0.0);
         		
         		Alert alert = new Alert(AlertType.ERROR);
         		alert.setTitle("Error");
@@ -337,7 +320,7 @@ public class IndexController {
         	}
         });
         
-        new Thread(task).start();		
+		new Thread(task).start();
 	}
 
 	@FXML
@@ -379,107 +362,78 @@ public class IndexController {
        
 	}
 	
-	
-	
+	private FilteredResult filterBackend() {
+		List<Document> gender_list = null;
+		List<Document> trips_list = null;
+		int populateType = 0;
+
+		String year_string = choiceYear.getValue();
+
+		if (choiceCity.getValue().equals("All") && year_string.equals("All")) {
+			initChart();
+			initPieChart();
+			status.setText("Ready");
+			return null;
+		}
+		// Year Only
+		else if (choiceCity.getValue().equals("All") && !year_string.equals("All")) {
+			gender_list = dm.tripsPerGender(Integer.parseInt(year_string), "trip");
+			trips_list = dm.tripsForEachCity(Integer.parseInt(year_string), "trip");
+			populateType = 1;
+		}
+		// City Only
+		else if (!choiceCity.getValue().equals("All") && year_string.equals("All")) {
+			gender_list = dm.tripsPerGender(choiceCity.getValue(), "trip");
+			trips_list = dm.tripsForACity(choiceCity.getValue(), "trip");
+		} else { // Both city and year filter
+			gender_list = dm.tripsPerGender(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
+			trips_list = dm.tripsPerCityYear(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
+		}
+
+		FilteredResult r = new FilteredResult();
+		r.setGender_list(gender_list);
+		r.setTrips_list(trips_list);
+		r.setPopulateType(populateType);
+
+		return r;
+	}
 
 	@FXML
 	private void filter(ActionEvent event) {
-		
-			// not complete yet، should be shown on screen before creating tables then disapear
-			setRotate(c1,true,360,10);
-			setRotate(c2,true,180,18);
-			setRotate(c3,true,145,24);
-		
+		status.setText("Please wait a moment...");
+		progressIndicator.setProgress(-1.0);
 
-		
-		String year_string = choiceYear.getValue();
-		List<Document> gender_list = null;
-		List<Document> trips_list = null;
-		
 		// clear old data chart
 		barChart.getData().clear();
 		pieChart.getData().clear();
 		
-		
-	
-		int populateType = 0;
-	
-		
+		Task<FilteredResult> task = new Task<FilteredResult>() {
+			@Override
+			public FilteredResult call() {
+				return filterBackend();
+			}
+		};
 
+		task.setOnSucceeded(e -> {
+			FilteredResult result = task.getValue();
+			if (result != null) {
+				if (result.getGender_list() != null)
+					populatePieChart(result.getGender_list());
 
-		
-		
-		if(choiceCity.getValue().equals("All") && year_string.equals("All")) {
-			
-			initChart();
-			initPieChart();
-			return;
-			
-		}
-		//Year Only
-		else if(choiceCity.getValue().equals("All") && !year_string.equals("All")) {
-			
-			gender_list = dm.tripsPerGender(Integer.parseInt(year_string), "trip");
-			trips_list = dm.tripsForEachCity(Integer.parseInt(year_string), "trip");
-			populateType = 1;
-		
-		}
-		//City Only
-		else if(!choiceCity.getValue().equals("All") && year_string.equals("All")) {
-			
-			gender_list = dm.tripsPerGender(choiceCity.getValue(), "trip");
-			trips_list = dm.tripsForACity(choiceCity.getValue(), "trip");
-		
-		}
-		//Both
-		else {
-			gender_list = dm.tripsPerGender(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
-			trips_list = dm.tripsPerCityYear(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
+				if (result.getTrips_list() != null) {
+					if (result.getPopulateType() == 0)
+						populateBarChartPerMonth(result.getTrips_list());
+					else
+						populateBarChartPerCity(result.getTrips_list());
+				}
+			}
 
-		}
-		
-		
-		
-		
-		
+			progressIndicator.setProgress(1.0);
+			status.setText("Ready.");
 
-		//int year = Integer.parseInt(year_string);
-		//String city = choiceCity.getValue();
-		/*
-		
-		for(int i=1;i<=12;i++) {
-			XYChart.Series<String,Integer> series1 = new XYChart.Series<String, Integer>();
-		    series1.setName(Integer.toString(i));
-		    series1.getData().clear();
-		    
-		    for(Document document : trips_list) {
+		});
 
-			    int month = document.getInteger("month");
-			    int trips = (document.getInteger("trips"));
-			    
-		    	if(month == i)
-		    		series1.getData().add(new XYChart.Data<String, Integer>(Integer.toString(month), trips));
-
-	        }
-		    
-		    if(series1.getData().isEmpty() == true) {
-	    		series1.getData().add(new XYChart.Data<String, Integer>(Integer.toString(i), 0));
-		    }
-		    
-	        barChart.getData().add(series1);	
-		}
-		*/
-		
-		if (gender_list != null)
-			populatePieChart(gender_list);
-		
-		if(trips_list != null) {
-			if(populateType == 0)
-				populateBarChartPerMonth(trips_list);
-			else
-				populateBarChartPerCity(trips_list);
-		}
-		
+		new Thread(task).start();
 	}
 	
 	private void populateBarChartPerMonth(List<Document> data) {
