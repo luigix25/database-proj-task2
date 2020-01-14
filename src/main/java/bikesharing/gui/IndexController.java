@@ -1,27 +1,40 @@
 package bikesharing.gui;
 
 import java.io.File;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 import org.bson.Document;
 
-import bikesharing.*;
+import bikesharing.DatabaseManager;
+import bikesharing.FileManager;
+import bikesharing.User;
 import javafx.animation.RotateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.concurrent.Task;
 
 public class IndexController {
 	@FXML private TabPane tabPane;
@@ -33,8 +46,6 @@ public class IndexController {
 	/* Insert new Tips */
 	@FXML private Button chooseButton;
 	@FXML private Button loadButton;
-	@FXML private Label path;
-	@FXML private Label loadStatus;
 	@FXML private ProgressIndicator loadIndicator;
 	
 	/* Delete Trips */
@@ -51,8 +62,8 @@ public class IndexController {
 
 	@FXML private BarChart<String, Integer> barChart;
 	@FXML private PieChart pieChart;
-	@FXML private Label status;
 
+	@FXML private Label status;
 
 	@FXML private ChoiceBox<String> choiceCity;
 	@FXML private ChoiceBox<String> choiceYear;
@@ -60,8 +71,6 @@ public class IndexController {
 	@FXML private Circle c1;
 	@FXML private Circle c2;
 	@FXML private Circle c3;
-	
-
 
 	private String tripsCollection = "trip";
 
@@ -194,8 +203,8 @@ public class IndexController {
 		//FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
 		//fileChooser.getExtensionFilters().add(extFilter);
 		currentFile = fileChooser.showOpenDialog(stage);
-		if(currentFile != null)
-			path.setText(currentFile.getPath());
+		// if(currentFile != null)
+		// path.setText(currentFile.getPath());
 	}
 
 	@FXML
@@ -273,11 +282,10 @@ public class IndexController {
 
 	@FXML
 	private void load() {
-		loadStatus.setText("");
-		path.setText("");
+		status.setText("");
 
 		if (currentFile == null) {
-			loadStatus.setText("Please choose the file to load.");
+			status.setText("Please choose the file to load.");
 			return;
 		}
 
@@ -291,7 +299,7 @@ public class IndexController {
 		}
         
         loadIndicator.setProgress(-1.0);
-        loadStatus.setText("Loading dataset. This operation could take some minutes. Please wait...");
+		status.setText("Loading dataset. This operation could take some minutes. Please wait...");
         
         Task<Boolean> task = new Task<Boolean>() {
         	@Override
@@ -313,7 +321,7 @@ public class IndexController {
 	            alert.setHeaderText("Dataset has been successfully imported in database");
 	           
 	            alert.showAndWait();
-	            loadStatus.setText("");
+				status.setText("");
         	}
         	else {
         		loadIndicator.setProgress(0.0);
@@ -324,7 +332,7 @@ public class IndexController {
         		alert.setContentText("An error occurred while importing the dataset");
         		
 	            alert.showAndWait();
-	            loadStatus.setText("");
+				status.setText("");
 
         	}
         });
