@@ -2,6 +2,7 @@ package bikesharing.gui;
 
 import bikesharing.DatabaseManager;
 import bikesharing.User;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -26,13 +27,27 @@ public class LoginController {
             return;
         }
         
+		status.setText("Wait a moment...");
+
         DatabaseManager dm = DatabaseManager.getInstance();
-        User user = dm.login(username.getText(), password.getText());
-        if (user != null) {
-        	IndexController ctrl = (IndexController) StageUtils.replace(this, event, "/gui/index.fxml");
-        	ctrl.init(user);
-        }
-        else
-        	status.setText("Invalid credentials");
+        
+        Task<User> task = new Task<User>() {
+        	@Override
+			public User call() {
+				System.err.println("[I] Login...");
+        		return dm.login(username.getText(), password.getText());
+        	}
+		};
+		task.setOnSucceeded(e -> {
+			System.err.println("[I] Login ok");
+			User user = task.getValue();
+
+			if (user != null) {
+				IndexController ctrl = (IndexController) StageUtils.replace(this, event, "/gui/index.fxml");
+				ctrl.init(user);
+			} else {
+				status.setText("Invalid credentials");
+			}
+		});
     }
 }
