@@ -1,5 +1,10 @@
 package bikesharing;
 
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.gte;
+import static com.mongodb.client.model.Filters.lte;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -9,10 +14,15 @@ import java.util.List;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.codehaus.jackson.map.*;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
 
 import com.mongodb.ServerAddress;
-import com.mongodb.client.*;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.BsonField;
@@ -20,8 +30,6 @@ import com.mongodb.client.model.Field;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.result.DeleteResult;
-
-import static com.mongodb.client.model.Filters.*;
 
 public class DatabaseManager {
 
@@ -541,11 +549,8 @@ public class DatabaseManager {
 		}
 		
 		return true;
-		
 	}
 	
-	
-
 	public boolean fire(User user) {
 		
 		Bson filter = eq("username",user.getUsername());
@@ -563,10 +568,21 @@ public class DatabaseManager {
 		}
 		
 		return true;
-			
-			
-			
+	}
+
+	public boolean changePassword(User user, String newPassword) {
+		Document filter = new Document("username", user.getUsername());
+
+		List<Bson> pipeline = Arrays.asList(Aggregates.addFields(new Field<String>("password", newPassword)));
 		
+		try {
+			database.getCollection("user").updateOne(filter, pipeline);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
 	}	
 	
 
