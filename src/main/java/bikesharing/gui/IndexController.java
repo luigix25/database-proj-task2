@@ -29,8 +29,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -67,9 +67,8 @@ public class IndexController {
 	@FXML private ChoiceBox<String> choiceCity;
 	@FXML private ChoiceBox<String> choiceYear;
 	
-	@FXML private Circle c1;
-	@FXML private Circle c2;
-	@FXML private Circle c3;
+	@FXML
+	private TextField newPassword;
 
 	private String tripsCollection = "trip";
 
@@ -150,8 +149,6 @@ public class IndexController {
 	public void loadUsers() {
 		List<User> users = DatabaseManager.getInstance().getAllUsers();
 		tableView.getItems().setAll(users);
-
-
 	}
 
 	private void setUpCitySelector() {
@@ -475,8 +472,16 @@ public class IndexController {
         }
 
         barChart.getData().add(series1);
-		
-		
+
+	}
+
+	@FXML
+	private void changePassword() {
+		if (dm.changePassword(this.user, newPassword.getText())) {
+			status.setText("Password changed!");
+		} else {
+			status.setText("An error occurred. Try again.");
+		}
 	}
 	
 }
