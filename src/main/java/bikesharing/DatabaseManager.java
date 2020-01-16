@@ -11,6 +11,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.codehaus.jackson.map.*;
 
+import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Accumulators;
@@ -72,6 +73,8 @@ public class DatabaseManager {
 	}
 	
 	public User login(String username, String password) {
+		//Can't use secondary, because i need consistency
+		
 		Document d = database.getCollection("user").find(and(eq("username", username), eq("password", password))).first();
 		if (d != null) {
 			User user = new User();
@@ -158,7 +161,7 @@ public class DatabaseManager {
 				Aggregates.project(Projections.fields(project))		
 		);
 		
-		MongoCollection<Document> collection = database.getCollection(collectionName);
+		MongoCollection<Document> collection = database.getCollection(collectionName).withReadPreference(ReadPreference.secondaryPreferred());
 		
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 		
@@ -191,7 +194,7 @@ public class DatabaseManager {
 				Aggregates.project(Projections.fields(project))		
 		);
 		
-		MongoCollection<Document> collection = database.getCollection(collectionName);
+		MongoCollection<Document> collection = database.getCollection(collectionName).withReadPreference(ReadPreference.secondaryPreferred());
 		
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 		
@@ -237,7 +240,7 @@ public class DatabaseManager {
 				Aggregates.sort(new Document("month",1))
 		);
 
-		MongoCollection<Document> collection = database.getCollection(collectionName);
+		MongoCollection<Document> collection = database.getCollection(collectionName).withReadPreference(ReadPreference.secondaryPreferred());
 		
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 		
@@ -283,7 +286,7 @@ public class DatabaseManager {
 				Aggregates.sort(new Document("month",1))
 		);
 
-		MongoCollection<Document> collection = database.getCollection(collectionName);
+		MongoCollection<Document> collection = database.getCollection(collectionName).withReadPreference(ReadPreference.secondaryPreferred());
 		
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 		
@@ -313,7 +316,7 @@ public class DatabaseManager {
 				Aggregates.project(Projections.fields(projections))
 		);
 		
-		MongoCollection<Document> collection = database.getCollection(collectionName);
+		MongoCollection<Document> collection = database.getCollection(collectionName).withReadPreference(ReadPreference.secondaryPreferred());
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 		ArrayList<Document> result = new ArrayList<Document>();
 		
@@ -338,7 +341,7 @@ public class DatabaseManager {
 				Aggregates.project(Projections.fields(projections))
 		);
 		
-		MongoCollection<Document> collection = database.getCollection(collectionName);
+		MongoCollection<Document> collection = database.getCollection(collectionName).withReadPreference(ReadPreference.secondaryPreferred());
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 		ArrayList<Document> result = new ArrayList<Document>();
 		
@@ -364,7 +367,7 @@ public class DatabaseManager {
 				Aggregates.project(Projections.fields(projections))
 		);
 		
-		MongoCollection<Document> collection = database.getCollection(collectionName);
+		MongoCollection<Document> collection = database.getCollection(collectionName).withReadPreference(ReadPreference.secondaryPreferred());
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 		ArrayList<Document> result = new ArrayList<Document>();
 		
@@ -388,7 +391,7 @@ public class DatabaseManager {
 				Aggregates.project(Projections.fields(projections))
 		);
 		
-		MongoCollection<Document> collection = database.getCollection(collectionName);
+		MongoCollection<Document> collection = database.getCollection(collectionName).withReadPreference(ReadPreference.secondaryPreferred());
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 		ArrayList<Document> result = new ArrayList<Document>();
 		
@@ -457,7 +460,7 @@ public class DatabaseManager {
 		);
 		
 		
-		MongoCollection<Document> collection = database.getCollection("trip");
+		MongoCollection<Document> collection = database.getCollection("trip").withReadPreference(ReadPreference.secondaryPreferred());
 		
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 		
