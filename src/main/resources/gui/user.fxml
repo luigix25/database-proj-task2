@@ -18,7 +18,7 @@
                   <Font size="24.0" />
                </font>
             </Text>
-            <Label lineSpacing="4.0" prefHeight="66.0" prefWidth="552.0" text="The credentials will be generated automatically: the username is the concatenation of the name and surname lowercase, the password is the default one. The new employee is inserted as a staff member." wrapText="true" />
+            <Label lineSpacing="4.0" prefHeight="66.0" prefWidth="552.0" text="The credentials will be generated automatically: the username is the concatenation of the name and surname lowercase, the default password is «pwd». The new employee is inserted as a staff member." wrapText="true" />
             <TextField fx:id="name" promptText="Name" />
             <TextField fx:id="surname" promptText="Surname" />
             <Button defaultButton="true" mnemonicParsing="false" onAction="#insertUser" text="Create" />
