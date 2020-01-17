@@ -161,12 +161,13 @@
           </Tab>
             <Tab text="Profile">
                <content>
-                  <HBox prefHeight="100.0" prefWidth="200.0">
+                  <VBox alignment="CENTER" prefHeight="442.0" prefWidth="800.0">
                      <children>
-                        <PasswordField fx:id="newPassword" />
+                        <Label fx:id="welcomeLabel" text="Welcome" />
+                        <PasswordField fx:id="newPassword" prefHeight="26.0" prefWidth="465.0" promptText="new password" />
                         <Button mnemonicParsing="false" onAction="#changePassword" text="Change Password" />
                      </children>
-                  </HBox>
+                  </VBox>
                </content>
             </Tab>
         </tabs>

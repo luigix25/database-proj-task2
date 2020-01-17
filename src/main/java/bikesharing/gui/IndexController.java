@@ -68,6 +68,8 @@ public class IndexController {
 	@FXML private ChoiceBox<String> choiceYear;
 	
 	@FXML
+	private Label welcomeLabel;
+	@FXML
 	private TextField newPassword;
 
 	private String tripsCollection = "trip";
@@ -100,6 +102,8 @@ public class IndexController {
 			tabPane.getTabs().remove(manageDatasetTab);
 			tabPane.getTabs().remove(employeesTab);
 		}
+
+		welcomeLabel.setText("Welcome " + user.getName() + " " + user.getSurname());
 
 	}
 
