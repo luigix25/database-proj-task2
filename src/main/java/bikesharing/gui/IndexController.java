@@ -40,6 +40,13 @@ public class IndexController {
 	@FXML private Tab employeesTab;
 	@FXML private Tab statisticsTab;
 
+	@FXML
+	private Tab systemUsageTab;
+	@FXML
+	private Tab stationUsageTab;
+	@FXML
+	private Tab pathsUsageTab;
+
 	/* Manage Dataset */
 	/* Insert new Tips */
 	@FXML private Button chooseButton;
@@ -64,8 +71,14 @@ public class IndexController {
 	@FXML
 	private ProgressIndicator progressIndicator;
 
-	@FXML private ChoiceBox<String> choiceCity;
-	@FXML private ChoiceBox<String> choiceYear;
+	@FXML
+	private ChoiceBox<String> choiceCity;
+	@FXML
+	private ChoiceBox<String> choiceYear;
+	@FXML
+	private ChoiceBox<String> choiceStation;
+	@FXML
+	private ChoiceBox<String> choiceDirection;
 	
 	@FXML
 	private Label welcomeLabel;
@@ -108,18 +121,14 @@ public class IndexController {
 	}
 
 	private void initTable() {
-
 		columnName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
 		columnSurname.setCellValueFactory(new PropertyValueFactory<User, String>("surname"));
 		columnStatus.setCellValueFactory(new PropertyValueFactory<User, String>("status"));
 		columnUsername.setCellValueFactory(new PropertyValueFactory<User, String>("username"));
 		loadUsers();
-
-
 	}
 
 	private void initChart() {
-
         barChart.getData().clear();
 		List<Document> data = dm.tripsForEachCity("trip");
 
@@ -401,6 +410,7 @@ public class IndexController {
 
 	@FXML
 	private void filter(ActionEvent event) {
+		/* TODO first detect which is the enabled tab, then compute the proper stats */
 		status.setText("Please wait a moment...");
 		progressIndicator.setProgress(-1.0);
 
@@ -492,4 +502,27 @@ public class IndexController {
 		}
 	}
 	
+	/* Enable/Disable filters based on the currently selected tab */
+	@FXML
+	private void selectedSystemUsage() {
+		choiceCity.setDisable(false);
+		choiceYear.setDisable(false);
+		choiceStation.setDisable(true);
+		choiceDirection.setDisable(true);
+	}
+	@FXML
+	private void selectedStationUsage() {
+		choiceCity.setDisable(false);
+		choiceYear.setDisable(false);
+		choiceStation.setDisable(true);
+		choiceDirection.setDisable(true);
+	}
+	@FXML
+	private void selectedPathsUsage() {
+		choiceCity.setDisable(false);
+		choiceYear.setDisable(false);
+		choiceStation.setDisable(false);
+		choiceDirection.setDisable(false);
+	}
+
 }

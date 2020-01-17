@@ -17,7 +17,6 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
@@ -131,43 +130,70 @@
           </Tab>
           <Tab fx:id="statisticsTab" text="Statistics">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <VBox>
                      <children>
-                        <HBox layoutX="14.0" layoutY="21.0" spacing="20.0">
+                        <HBox spacing="20.0">
                            <children>
       
-                                                <ChoiceBox fx:id="choiceCity" layoutX="14.0" layoutY="21.0" prefWidth="150.0" />
+                                                                  <ChoiceBox fx:id="choiceCity" layoutX="14.0" layoutY="21.0" prefWidth="150.0" />
+                              <ChoiceBox fx:id="choiceStation" prefWidth="150.0" />
+                              <ChoiceBox fx:id="choiceDirection" prefWidth="150.0" />
                               <ChoiceBox fx:id="choiceYear" layoutX="192.0" layoutY="21.0" prefWidth="150.0" />
-                              <Button layoutX="390.0" layoutY="21.0" mnemonicParsing="false" onAction="#filter" text="Filter" />
+                              <Button layoutX="390.0" layoutY="21.0" mnemonicParsing="false" onAction="#filter" text="Apply filter" />
                            </children>
                         </HBox>
-                        <HBox layoutX="-2.0" layoutY="57.0" prefHeight="510.0" prefWidth="800.0">
-                           <children>
-                              <BarChart fx:id="barChart" animated="false" layoutX="34.0" layoutY="57.0" prefHeight="510.0" prefWidth="500.0">
-                                <xAxis>
-                                  <CategoryAxis fx:id="categoryAxis" side="BOTTOM" />
-                                </xAxis>
-                                <yAxis>
-                                  <NumberAxis side="LEFT" />
-                                </yAxis>
-                              </BarChart>
-                              <PieChart fx:id="pieChart" animated="false" layoutX="332.0" layoutY="68.0" prefHeight="308.0" prefWidth="250.0" />
-                           </children>
-                        </HBox>
-                        <StackPane layoutX="588.0" layoutY="19.0" prefHeight="70.0" prefWidth="76.0" AnchorPane.bottomAnchor="478.0" AnchorPane.leftAnchor="588.0" AnchorPane.topAnchor="19.0" />
+                        <TabPane prefHeight="529.0" prefWidth="800.0">
+                           <tabs>
+                              <Tab fx:id="systemUsageTab" closable="false" onSelectionChanged="#selectedSystemUsage" text="System usage">
+                                 <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" onMouseReleased="#selectedSystemUsage" prefHeight="180.0" prefWidth="200.0">
+                                       <children>
+                                          <HBox layoutX="-2.0" layoutY="57.0" prefHeight="510.0" prefWidth="800.0">
+                                             <children>
+                                                <BarChart fx:id="barChart" animated="false" layoutX="34.0" layoutY="57.0" prefHeight="510.0" prefWidth="500.0">
+                                                  <xAxis>
+                                                    <CategoryAxis fx:id="categoryAxis" side="BOTTOM" />
+                                                  </xAxis>
+                                                  <yAxis>
+                                                    <NumberAxis side="LEFT" />
+                                                  </yAxis>
+                                                </BarChart>
+                                                <PieChart fx:id="pieChart" animated="false" layoutX="332.0" layoutY="68.0" prefHeight="308.0" prefWidth="250.0" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                              </Tab>
+                              <Tab fx:id="stationUsageTab" closable="false" onSelectionChanged="#selectedStationUsage" text="Station usage">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" onMouseReleased="#selectedStationUsage" prefHeight="180.0" prefWidth="200.0" />
+                                </content>
+                              </Tab>
+                              <Tab fx:id="pathsUsageTab" closable="false" onSelectionChanged="#selectedPathsUsage" text="Paths usage">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" onMouseReleased="#selectedPathsUsage" prefHeight="180.0" prefWidth="200.0" />
+                                </content>
+                              </Tab>
+                           </tabs>
+                        </TabPane>
                      </children>
-                  </AnchorPane>
+                  </VBox>
             </content>
           </Tab>
             <Tab text="Profile">
                <content>
-                  <VBox alignment="CENTER" prefHeight="442.0" prefWidth="800.0">
+                  <AnchorPane prefHeight="567.0" prefWidth="656.0">
                      <children>
-                        <Label fx:id="welcomeLabel" text="Welcome" />
-                        <PasswordField fx:id="newPassword" prefHeight="26.0" prefWidth="465.0" promptText="new password" />
-                        <Button mnemonicParsing="false" onAction="#changePassword" text="Change Password" />
+                        <VBox alignment="CENTER" prefHeight="442.0" prefWidth="800.0">
+                           <children>
+                              <Label fx:id="welcomeLabel" text="Welcome" />
+                              <PasswordField fx:id="newPassword" prefHeight="26.0" prefWidth="465.0" promptText="new password" />
+                              <Button mnemonicParsing="false" onAction="#changePassword" text="Change Password" />
+                           </children>
+                        </VBox>
                      </children>
-                  </VBox>
+                  </AnchorPane>
                </content>
             </Tab>
         </tabs>
