@@ -477,6 +477,10 @@ public class IndexController {
 
 	@FXML
 	private void changePassword() {
+		if (newPassword.getText().equals("")) {
+			status.setText("Empty password is not allowed");
+			return;
+		}
 		if (dm.changePassword(this.user, newPassword.getText())) {
 			status.setText("Password changed!");
 		} else {
