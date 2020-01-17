@@ -1,6 +1,10 @@
 package bikesharing.gui;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -194,12 +198,27 @@ public class IndexController {
 	private void choose(ActionEvent event) {
 		Stage stage = StageUtils.getStage(event);
 		FileChooser fileChooser = new FileChooser();
-		// TODO -- remove these lines? Do we want to actually check for the extension?
-		//FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
-		//fileChooser.getExtensionFilters().add(extFilter);
+
 		currentFile = fileChooser.showOpenDialog(stage);
-		// if(currentFile != null)
-		// path.setText(currentFile.getPath());
+		if (currentFile == null)
+			return;
+
+		Path path = Paths.get(currentFile.getPath());
+		status.setText("Selected " + path);
+
+		try {
+			if (!Files.probeContentType(path).equals("text/json")) {
+				status.setText("invalid file");
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Error");
+				alert.setHeaderText("Invalid MIME type for file");
+				alert.setContentText("File is not text/json");
+				alert.showAndWait();
+			}
+		} catch (IOException e) {
+			System.err.println("[E] some error occurred");
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
