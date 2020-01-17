@@ -173,7 +173,7 @@
       </TabPane>
       <HBox>
          <children>
-            <Label fx:id="status" alignment="TOP_LEFT" lineSpacing="4.0" prefHeight="27.0" prefWidth="800.0" text="Ready." wrapText="true" />
+            <Label fx:id="status" lineSpacing="4.0" prefHeight="43.0" prefWidth="585.0" text="Ready." wrapText="true" />
             <ProgressIndicator fx:id="progressIndicator" progress="0.0" />
          </children>
       </HBox>

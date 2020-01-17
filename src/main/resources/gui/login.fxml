@@ -34,7 +34,7 @@
             <TextField fx:id="username" maxWidth="200.0" promptText="Username" />
             <PasswordField fx:id="password" maxWidth="200.0" promptText="Password" />
             <Button defaultButton="true" mnemonicParsing="false" onAction="#login" text="Login" />
-            <Text fx:id="status" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" />
+            <Text fx:id="status" strokeType="OUTSIDE" strokeWidth="0.0" />
             <Text fill="#666666" strokeType="OUTSIDE" strokeWidth="0.0" text="© 2020 WBP Bike Sharing System">
                <font>
                   <Font size="10.0" />

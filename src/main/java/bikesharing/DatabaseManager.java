@@ -80,6 +80,10 @@ public class DatabaseManager {
 		instance.mongoClient.close();
 	}
 	
+	public final ServerAddress[] getHosts() {
+		return this.hosts;
+	}
+
 	public User login(String username, String password) {
 		//Can't use secondary, because i need consistency
 		
