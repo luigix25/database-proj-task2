@@ -4,7 +4,7 @@ import java.net.InetAddress;
 
 import com.mongodb.ServerAddress;
 
-import bikesharing.DatabaseManager;
+import bikesharing.MongoDatabaseManager;
 import bikesharing.User;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -23,7 +23,7 @@ public class LoginController {
     private void login(ActionEvent event){
 		status.setText("please wait a moment");
 
-		DatabaseManager dm = DatabaseManager.getInstance();
+		MongoDatabaseManager dm = MongoDatabaseManager.getInstance();
 		
 		if (username.getText().isEmpty()) {
 	        status.setText("Please enter your ID");

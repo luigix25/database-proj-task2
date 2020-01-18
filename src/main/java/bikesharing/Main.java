@@ -11,7 +11,7 @@ public class Main extends Application {
 	public static void main(String[] args) {
 		launch();
 		System.out.println("Closing db connection...");
-		DatabaseManager.close();
+		MongoDatabaseManager.close();
 	}
 
 	@Override

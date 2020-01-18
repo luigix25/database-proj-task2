@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>database-proj</groupId>
-  <artifactId>database-proj-task2</artifactId>
-  <version>2019.11</version>
+  <artifactId>database-proj-task3</artifactId>
+  <version>2020.01</version>
    <build>
     <sourceDirectory>src/main/java</sourceDirectory>
     <plugins>
@@ -12,7 +12,6 @@
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
-          <!--<release>1.8</release>-->
         </configuration>
     </plugin>
     <!-- For building with JavaFX -->
@@ -70,6 +69,12 @@
         <groupId>org.mongodb</groupId>
         <artifactId>mongodb-driver-sync</artifactId>
         <version>3.11.2</version>
+    </dependency>
+    <!-- Neo4j driver -->
+    <dependency>
+        <groupId>org.neo4j.driver</groupId>
+        <artifactId>neo4j-java-driver</artifactId>
+        <version>4.0.0</version>
     </dependency>
     <!-- Serialize to JSON java object -->
 	<dependency>

@@ -10,8 +10,8 @@ import java.util.Optional;
 
 import org.bson.Document;
 
-import bikesharing.DatabaseManager;
 import bikesharing.FileManager;
+import bikesharing.MongoDatabaseManager;
 import bikesharing.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -94,10 +94,10 @@ public class IndexController {
 	private File currentFile;
 	private User user;
 
-	private DatabaseManager dm;
+	private MongoDatabaseManager dm;
 
 	public void init(User user) {
-		dm = DatabaseManager.getInstance();
+		dm = MongoDatabaseManager.getInstance();
 		setSession(user);
 		
 		setUpCitySelector();
@@ -164,7 +164,7 @@ public class IndexController {
 	}
 
 	public void loadUsers() {
-		List<User> users = DatabaseManager.getInstance().getAllUsers();
+		List<User> users = MongoDatabaseManager.getInstance().getAllUsers();
 		tableView.getItems().setAll(users);
 	}
 

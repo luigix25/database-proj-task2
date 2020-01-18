@@ -32,9 +32,9 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.result.DeleteResult;
 
-public class DatabaseManager {
+public class MongoDatabaseManager {
 
-	private static DatabaseManager instance = null;
+	private static MongoDatabaseManager instance = null;
 		
 	private final ServerAddress[] hosts = {
 		new ServerAddress("172.16.0.58",27017),
@@ -43,15 +43,13 @@ public class DatabaseManager {
 	};
 	
 	private String mongoURL;
-	 
-	// private final String mongoURL = "mongodb://dutcher.robinodds.it:27018,dutcher.robinodds.it:27019,dutcher.robinodds.it:27020/?replicaSet=BSSReplica";
 		
 	private final String databaseName = "ducange";
 	
 	private MongoClient mongoClient;
 	private MongoDatabase database;
 	
-	private DatabaseManager() {
+	private MongoDatabaseManager() {
 		/* prepare URL for connection */
 		mongoURL = "mongodb://";
 		for (int i = 0; i < hosts.length; ++i) {
@@ -66,9 +64,9 @@ public class DatabaseManager {
 		database = mongoClient.getDatabase(databaseName);
 	}
 	
-	public static DatabaseManager getInstance() {
+	public static MongoDatabaseManager getInstance() {
 		if(instance == null) {
-			instance = new DatabaseManager();
+			instance = new MongoDatabaseManager();
 		}
 		
 		return instance;
@@ -154,13 +152,6 @@ public class DatabaseManager {
 		return true;
 	}
 		
-	
-	/*public List<Document> genderForCity(String city){
-		
-		return null;
-		
-	}*/
-	
 	//AnyTime
 	public List<Document> tripsForEachCity(String collectionName){
 		List<Bson> project = new ArrayList<Bson>();
@@ -223,8 +214,7 @@ public class DatabaseManager {
 	}
 	
 	//Trips for a given city
-	//TOOD: can be optimized!!!
-	
+	// TODD: can be optimized!!!
 	public List<Document> tripsForACity(String city, String collectionName){
 		List<Bson> project = new ArrayList<Bson>();
 		project.add(Projections.excludeId());
@@ -432,8 +422,6 @@ public class DatabaseManager {
 		}
 		
 		return users;
-		
-		
 	}
 	
 	public int deleteTrips(String city, LocalDate fromDate, LocalDate toDate) {

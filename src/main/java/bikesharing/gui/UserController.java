@@ -1,11 +1,12 @@
 package bikesharing.gui;
 
-import bikesharing.DatabaseManager;
+import bikesharing.MongoDatabaseManager;
 import bikesharing.User;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.control.Label;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 
 public class UserController {
 	@FXML private TextField name;
@@ -14,7 +15,7 @@ public class UserController {
 	
 	private IndexController indexCtrl;
 	
-	DatabaseManager dm;
+	MongoDatabaseManager dm;
 	
 	public void init(IndexController indexCtrl) {
 		this.indexCtrl = indexCtrl;
@@ -41,7 +42,7 @@ public class UserController {
 		user.setStatus("S");
 		user.setPassword("pwd");
 		
-		dm = DatabaseManager.getInstance();
+		dm = MongoDatabaseManager.getInstance();
 		if (!dm.insertUser(user)) {
 			status.setText("Database error: impossible to insert a new user");
 		} else {
