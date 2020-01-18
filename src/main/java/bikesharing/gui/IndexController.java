@@ -1,8 +1,6 @@
 package bikesharing.gui;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -12,6 +10,7 @@ import org.bson.Document;
 
 import bikesharing.FileManager;
 import bikesharing.MongoDatabaseManager;
+import bikesharing.NeoDatabaseManager;
 import bikesharing.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -52,7 +51,7 @@ public class IndexController {
 	private Tab pathsUsageTab;
 
 	/* Manage Dataset */
-	/* Insert new Tips */
+	/* Insert new Trips */
 	@FXML private Button chooseButton;
 	@FXML private Button loadButton;
 	
@@ -94,18 +93,30 @@ public class IndexController {
 	private File currentFile;
 	private User user;
 
-	private MongoDatabaseManager dm;
+	private MongoDatabaseManager mdm;
+	private NeoDatabaseManager ndm;
 
 	public void init(User user) {
-		dm = MongoDatabaseManager.getInstance();
+		mdm = MongoDatabaseManager.getInstance();
+		ndm = NeoDatabaseManager.getInstance();
+
 		setSession(user);
-		
-		setUpCitySelector();
-		setUpYearSelector();
-		
+	}
+
+	@FXML
+	public void selectedEmployees() {
 		initTable();
-		initChart();
-		initPieChart();
+	}
+
+	@FXML
+	public void selectedStatistics() {
+		if (citySelector.getItems().isEmpty()) { /* this happens only at cold start */
+			setUpCitySelector();
+			setUpYearSelector();
+
+			initChart();
+			initPieChart();
+		}
 	}
 
 	private void setSession(User user) {
@@ -134,7 +145,7 @@ public class IndexController {
 
 	private void initChart() {
         barChart.getData().clear();
-		List<Document> data = dm.tripsForEachCity("trip");
+		List<Document> data = mdm.tripsForEachCity("trip");
 
         XYChart.Series<String,Integer> series1 = new XYChart.Series<String, Integer>();
         series1.setName("Global Trips");
@@ -149,7 +160,7 @@ public class IndexController {
 	}
 	
 	private void initPieChart() {
-		List<Document> data = dm.tripsPerGender("trip");
+		List<Document> data = mdm.tripsPerGender("trip");
 		populatePieChart(data);
 	}
 	
@@ -169,7 +180,7 @@ public class IndexController {
 	}
 
 	private void setUpCitySelector() {
-		List<String> cities = dm.getCities();
+		List<String> cities = mdm.getCities();
 		citySelector.getItems().clear();
 		choiceCity.getItems().clear();
 		
@@ -183,7 +194,7 @@ public class IndexController {
 	}
 	
 	private void setUpYearSelector() {
-		List<Integer> years = dm.getYears();
+		List<Integer> years = mdm.getYears();
 		choiceYear.getItems().clear();
 		
 		choiceYear.getItems().add("All");
@@ -206,6 +217,8 @@ public class IndexController {
 		Path path = Paths.get(currentFile.getPath());
 		status.setText("Selected " + path);
 
+		// doenst work, sometimes good json are not recognized
+		/*
 		try {
 			if (!Files.probeContentType(path).equals("text/json")) {
 				status.setText("invalid file");
@@ -219,6 +232,7 @@ public class IndexController {
 			System.err.println("[E] some error occurred");
 			e.printStackTrace();
 		}
+		*/
 	}
 
 	@FXML
@@ -232,7 +246,7 @@ public class IndexController {
 
 		System.out.println(user);
 
-		if (!dm.promoteUser(user))
+		if (!mdm.promoteUser(user))
 			status.setText("Cannot perform this action on this employee");
 		else
 			loadUsers();
@@ -250,7 +264,7 @@ public class IndexController {
 
 		System.out.println(user);
 
-		if (!dm.demoteUser(user))
+		if (!mdm.demoteUser(user))
 			status.setText("Cannot perform this action on this employee");
 		else
 			loadUsers();
@@ -284,7 +298,7 @@ public class IndexController {
         if (result.get() == ButtonType.OK) {
 			System.out.println(user);
 
-			if(dm.fire(user))
+			if (mdm.fire(user))
 				System.out.print("fired successfully:)");
 			else
 				status.setText("fire is not permitted");
@@ -316,7 +330,9 @@ public class IndexController {
         Task<Boolean> task = new Task<Boolean>() {
         	@Override
         	public Boolean call() {
-        		return dm.insertBatch(data, tripsCollection);
+				Boolean mongo = mdm.insertBatch(data, tripsCollection);
+				Boolean neo = ndm.insertBatch(data);
+				return (mongo && neo);
         	}
         };
         
@@ -371,7 +387,7 @@ public class IndexController {
 			return;
 		}
 
-		int deletedTrips = dm.deleteTrips(citySelector.getValue().toString(), fromDate.getValue(), toDate.getValue());
+		int deletedTrips = mdm.deleteTrips(citySelector.getValue().toString(), fromDate.getValue(), toDate.getValue());
 	
 
 		if (deletedTrips == 0) {
@@ -406,17 +422,17 @@ public class IndexController {
 		}
 		// Year Only
 		else if (choiceCity.getValue().equals("All") && !year_string.equals("All")) {
-			gender_list = dm.tripsPerGender(Integer.parseInt(year_string), "trip");
-			trips_list = dm.tripsForEachCity(Integer.parseInt(year_string), "trip");
+			gender_list = mdm.tripsPerGender(Integer.parseInt(year_string), "trip");
+			trips_list = mdm.tripsForEachCity(Integer.parseInt(year_string), "trip");
 			populateType = 1;
 		}
 		// City Only
 		else if (!choiceCity.getValue().equals("All") && year_string.equals("All")) {
-			gender_list = dm.tripsPerGender(choiceCity.getValue(), "trip");
-			trips_list = dm.tripsForACity(choiceCity.getValue(), "trip");
+			gender_list = mdm.tripsPerGender(choiceCity.getValue(), "trip");
+			trips_list = mdm.tripsForACity(choiceCity.getValue(), "trip");
 		} else { // Both city and year filter
-			gender_list = dm.tripsPerGender(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
-			trips_list = dm.tripsPerCityYear(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
+			gender_list = mdm.tripsPerGender(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
+			trips_list = mdm.tripsPerCityYear(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
 		}
 
 		FilteredResult r = new FilteredResult();
@@ -514,7 +530,7 @@ public class IndexController {
 			status.setText("Empty password is not allowed");
 			return;
 		}
-		if (dm.changePassword(this.user, newPassword.getText())) {
+		if (mdm.changePassword(this.user, newPassword.getText())) {
 			status.setText("Password changed!");
 		} else {
 			status.setText("An error occurred. Try again.");

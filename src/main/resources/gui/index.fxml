@@ -93,7 +93,7 @@
                   </AnchorPane>
                </content>
             </Tab>
-          <Tab fx:id="employeesTab" text="Employees">
+          <Tab fx:id="employeesTab" onSelectionChanged="#selectedEmployees" text="Employees">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -128,7 +128,7 @@
                   </AnchorPane>
             </content>
           </Tab>
-          <Tab fx:id="statisticsTab" text="Statistics">
+          <Tab fx:id="statisticsTab" onSelectionChanged="#selectedStatistics" text="Statistics">
             <content>
                   <VBox>
                      <children>

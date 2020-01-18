@@ -110,7 +110,7 @@ public class MongoDatabaseManager {
 	
 	public boolean insertBatch(List<String>data, String collectionName) {
 		if (data == null) {
-			System.out.println("No Data");
+			System.err.println("No Data");
 			return false;
 		}
 			
