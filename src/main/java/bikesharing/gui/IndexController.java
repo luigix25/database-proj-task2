@@ -205,6 +205,7 @@ public class IndexController {
 		Path path = Paths.get(currentFile.getPath());
 		status.setText("Selected " + path);
 
+		/*
 		try {
 			if (!Files.probeContentType(path).equals("text/json")) {
 				status.setText("invalid file");
@@ -217,7 +218,7 @@ public class IndexController {
 		} catch (IOException e) {
 			System.err.println("[E] some error occurred");
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	@FXML
