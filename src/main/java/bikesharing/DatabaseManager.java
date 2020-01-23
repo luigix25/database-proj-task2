@@ -43,8 +43,6 @@ public class DatabaseManager {
 	};
 	
 	private String mongoURL;
-	 
-	// private final String mongoURL = "mongodb://dutcher.robinodds.it:27018,dutcher.robinodds.it:27019,dutcher.robinodds.it:27020/?replicaSet=BSSReplica";
 		
 	private final String databaseName = "ducange";
 	
@@ -112,7 +110,7 @@ public class DatabaseManager {
 	
 	public boolean insertBatch(List<String>data, String collectionName) {
 		if (data == null) {
-			System.out.println("No Data");
+			System.err.println("No Data");
 			return false;
 		}
 			

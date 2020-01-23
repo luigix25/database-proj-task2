@@ -45,7 +45,7 @@ public class IndexController {
 	@FXML private Tab statisticsTab;
 
 	/* Manage Dataset */
-	/* Insert new Tips */
+	/* Insert new Trips */
 	@FXML private Button chooseButton;
 	@FXML private Button loadButton;
 	
