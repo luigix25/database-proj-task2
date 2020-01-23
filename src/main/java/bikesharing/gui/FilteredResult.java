@@ -5,9 +5,13 @@ import java.util.List;
 import org.bson.Document;
 
 public class FilteredResult {
+	enum Type {
+		GLOBAL, CITY_ONLY, YEAR_ONLY, CITY_AND_YEAR, STATION_AND_WEEK
+	};
+
+	Type type = null;
 	List<Document> gender_list = null;
 	List<Document> trips_list = null;
-	int populateType = 0;
 	String caption;
 
 	public List<Document> getGender_list() {
@@ -26,12 +30,12 @@ public class FilteredResult {
 		this.trips_list = trips_list;
 	}
 
-	public int getPopulateType() {
-		return populateType;
+	public Type getType() {
+		return type;
 	}
 
-	public void setPopulateType(int populateType) {
-		this.populateType = populateType;
+	public void setType(Type type) {
+		this.type = type;
 	}
 	
 	public String getCaption() {

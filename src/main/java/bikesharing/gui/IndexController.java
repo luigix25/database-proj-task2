@@ -1,8 +1,6 @@
 package bikesharing.gui;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -13,6 +11,7 @@ import org.bson.Document;
 import bikesharing.DatabaseManager;
 import bikesharing.FileManager;
 import bikesharing.User;
+import bikesharing.gui.FilteredResult.Type;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -74,6 +73,10 @@ public class IndexController {
 	private ChoiceBox<String> choiceCity;
 	@FXML
 	private ChoiceBox<String> choiceYear;
+	@FXML
+	private ChoiceBox<String> choiceWeek;
+	@FXML
+	private ChoiceBox<String> choiceStation;
 
 	/* Generic status indicator for the application */
 	@FXML private Label status;
@@ -95,15 +98,20 @@ public class IndexController {
 	private DatabaseManager dm;
 
 	public void init(User user) {
+		/* WBP init */
 		dm = DatabaseManager.getInstance();
 		setSession(user);
 		
+		/* GUI init */
 		setUpCitySelector();
 		setUpYearSelector();
-		
 		initTable();
 		initChart();
 		initPieChart();
+		choiceCity.setOnAction((event) -> {
+			this.citySelected();
+		});
+
 	}
 
 	private void setSession(User user) {
@@ -394,7 +402,7 @@ public class IndexController {
 	private FilteredResult filterBackend() {
 		List<Document> gender_list = null;
 		List<Document> trips_list = null;
-		int populateType = 0;
+		Type type = null;
 
 		String year_string = choiceYear.getValue();
 
@@ -402,13 +410,14 @@ public class IndexController {
 
 		// global statistics
 		if (choiceCity.getValue().equals("All") && year_string.equals("All")) {
-			return null;
+			type = Type.GLOBAL;
+			caption = "Global Trips in the various cities";
 		}
 		// Year Only
 		else if (choiceCity.getValue().equals("All") && !year_string.equals("All")) {
 			gender_list = dm.tripsPerGender(Integer.parseInt(year_string), "trip");
 			trips_list = dm.tripsForEachCity(Integer.parseInt(year_string), "trip");
-			populateType = 1;
+			type = Type.YEAR_ONLY;
 			caption = "Trips for the year " + year_string + " in various cities";
 		}
 		// City Only
@@ -416,18 +425,20 @@ public class IndexController {
 			gender_list = dm.tripsPerGender(choiceCity.getValue(), "trip");
 			trips_list = dm.tripsForACity(choiceCity.getValue(), "trip");
 			caption = "Trips during the various months of years in " + choiceCity.getValue();
+			type = Type.CITY_ONLY;
 		}
 		// Both city and year filter
 		else {
 			gender_list = dm.tripsPerGender(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
 			trips_list = dm.tripsPerCityYear(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
 			caption = "Trips during the various months of year " + year_string + " in " + choiceCity.getValue();
+			type = Type.CITY_AND_YEAR;
 		}
 
 		FilteredResult r = new FilteredResult();
 		r.setGender_list(gender_list);
 		r.setTrips_list(trips_list);
-		r.setPopulateType(populateType);
+		r.setType(type);
 		r.setCaption(caption);
 
 		return r;
@@ -451,7 +462,30 @@ public class IndexController {
 
 		task.setOnSucceeded(e -> {
 			FilteredResult result = task.getValue();
-			if (result != null) {
+
+			switch (result.getType()) {
+				case GLOBAL:
+					initChart();
+					initPieChart();
+					break;
+				case YEAR_ONLY:
+					populatePieChart(result.getGender_list());
+					populateBarChartPerCity(result.getTrips_list());
+					break;
+				case CITY_ONLY:
+					populatePieChart(result.getGender_list());
+					populateBarChartPerMonth(result.getTrips_list());
+					break;
+				case CITY_AND_YEAR:
+					populatePieChart(result.getGender_list());
+					populateBarChartPerMonth(result.getTrips_list());
+					break;
+				case STATION_AND_WEEK:
+					assert(false);
+					break;
+			}
+			
+			/*if (result != null) {
 				if (result.getGender_list() != null)
 					populatePieChart(result.getGender_list());
 
@@ -462,12 +496,11 @@ public class IndexController {
 						populateBarChartPerCity(result.getTrips_list());
 				}
 			} else {
-				initChart();
-				initPieChart();
-			}
 
+			}
+*/
 			progressIndicator.setProgress(1.0);
-			leftChartLabel.setText((result != null) ? result.getCaption() : "Global Trips in the various cities");
+			leftChartLabel.setText(result.getCaption());
 			status.setText("Ready.");
 
 		});
@@ -502,7 +535,6 @@ public class IndexController {
 	}
 	
 	private void populateBarChartPerCity(List<Document>data) {
-		
 		barChart.getData().clear();
 
         XYChart.Series<String,Integer> series1 = new XYChart.Series<String, Integer>();
@@ -510,11 +542,9 @@ public class IndexController {
 
         for(Document document : data) {
             series1.getData().add(new XYChart.Data<String, Integer>((String)document.get("city"), (Integer)document.get("trips")));
-
         }
 
         barChart.getData().add(series1);
-
 	}
 
 	@FXML
@@ -530,4 +560,33 @@ public class IndexController {
 		}
 	}
 	
+	@FXML
+	private void byNumberTripsSelected() {
+		choiceWeek.setDisable(true);
+		choiceStation.setDisable(true);
+	}
+
+	@FXML
+	private void byStationSelected() {
+		choiceWeek.setDisable(false);
+		choiceStation.setDisable(false);
+		status.setText("Please select city");
+	}
+
+	@FXML
+	private void citySelected() {
+		System.err.println("[D] selected city");
+		// do the query for stations of this city
+		List<String> stations = null;
+		if (choiceCity.getValue() != "All") {
+			stations = dm.getStationsForCity(choiceCity.getValue());
+		}
+		
+		choiceStation.getItems().clear();
+		for (String station : stations) {
+			choiceStation.getItems().add(station);
+		}
+
+	}
+
 }

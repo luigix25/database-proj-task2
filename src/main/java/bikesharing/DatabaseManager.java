@@ -151,14 +151,18 @@ public class DatabaseManager {
 				
 		return true;
 	}
-		
+
+	public List<String> getStationsForCity(String city) {
+		// TODO -- come razzo si scrive sta query?
+		// SELECT DISTINCT trip.space.stazione FROM trip
+		List<String> list = new ArrayList<String>();
+		list.add("Pomarance");
+		list.add("Pisa Centrale");
+		list.add("Pisa S. Rossore");
+		return list;
+	}
 	
-	/*public List<Document> genderForCity(String city){
-		
-		return null;
-		
-	}*/
-	
+
 	//AnyTime
 	public List<Document> tripsForEachCity(String collectionName){
 		List<Bson> project = new ArrayList<Bson>();
