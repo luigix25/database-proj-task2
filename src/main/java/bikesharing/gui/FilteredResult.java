@@ -8,6 +8,7 @@ public class FilteredResult {
 	List<Document> gender_list = null;
 	List<Document> trips_list = null;
 	int populateType = 0;
+	String caption;
 
 	public List<Document> getGender_list() {
 		return gender_list;
@@ -31,6 +32,14 @@ public class FilteredResult {
 
 	public void setPopulateType(int populateType) {
 		this.populateType = populateType;
+	}
+	
+	public String getCaption() {
+		return this.caption;
+	}
+
+	public void setCaption(String caption) {
+		this.caption = caption;
 	}
 
 }

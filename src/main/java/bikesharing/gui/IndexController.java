@@ -55,6 +55,7 @@ public class IndexController {
 	@FXML private DatePicker toDate;
 	@FXML private Label deleteStatus;
 
+	/* Statistics Tab Elements */
 	@FXML private TableView<User> tableView;
 	@FXML private TableColumn<User,String> columnName;
 	@FXML private TableColumn<User,String> columnSurname;
@@ -64,19 +65,29 @@ public class IndexController {
 	@FXML private BarChart<String, Integer> barChart;
 	@FXML private PieChart pieChart;
 
+	@FXML
+	private Label leftChartLabel;
+	@FXML
+	private Label rightChartLabel;
+
+	@FXML
+	private ChoiceBox<String> choiceCity;
+	@FXML
+	private ChoiceBox<String> choiceYear;
+
+	/* Generic status indicator for the application */
 	@FXML private Label status;
 	@FXML
 	private ProgressIndicator progressIndicator;
-
-	@FXML private ChoiceBox<String> choiceCity;
-	@FXML private ChoiceBox<String> choiceYear;
 	
+	/* User profile tab */
 	@FXML
 	private Label welcomeLabel;
 	@FXML
 	private TextField newPassword;
 
-	private String tripsCollection = "trip";
+	/* Various constants and variables */
+	private final String tripsCollection = "trip";
 
 	private File currentFile;
 	private User user;
@@ -118,8 +129,6 @@ public class IndexController {
 		columnStatus.setCellValueFactory(new PropertyValueFactory<User, String>("status"));
 		columnUsername.setCellValueFactory(new PropertyValueFactory<User, String>("username"));
 		loadUsers();
-
-
 	}
 
 	private void initChart() {
@@ -134,14 +143,13 @@ public class IndexController {
             series1.getData().add(new XYChart.Data<String, Integer>((String)document.get("city"), (Integer)document.get("trips")));
 
         }
-
         barChart.getData().add(series1);
-
 	}
 	
 	private void initPieChart() {
 		List<Document> data = dm.tripsPerGender("trip");
 		populatePieChart(data);
+		rightChartLabel.setText("Riders by sex");
 	}
 	
 	private void populatePieChart(List<Document> data) {
@@ -389,10 +397,10 @@ public class IndexController {
 
 		String year_string = choiceYear.getValue();
 
+		String caption;
+
+		// global statistics
 		if (choiceCity.getValue().equals("All") && year_string.equals("All")) {
-			initChart();
-			initPieChart();
-			status.setText("Ready");
 			return null;
 		}
 		// Year Only
@@ -400,20 +408,26 @@ public class IndexController {
 			gender_list = dm.tripsPerGender(Integer.parseInt(year_string), "trip");
 			trips_list = dm.tripsForEachCity(Integer.parseInt(year_string), "trip");
 			populateType = 1;
+			caption = "Trips for the year " + year_string + " in various cities";
 		}
 		// City Only
 		else if (!choiceCity.getValue().equals("All") && year_string.equals("All")) {
 			gender_list = dm.tripsPerGender(choiceCity.getValue(), "trip");
 			trips_list = dm.tripsForACity(choiceCity.getValue(), "trip");
-		} else { // Both city and year filter
+			caption = "Trips during the various months of years in " + choiceCity.getValue();
+		}
+		// Both city and year filter
+		else {
 			gender_list = dm.tripsPerGender(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
 			trips_list = dm.tripsPerCityYear(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
+			caption = "Trips during the various months of year " + year_string + " in " + choiceCity.getValue();
 		}
 
 		FilteredResult r = new FilteredResult();
 		r.setGender_list(gender_list);
 		r.setTrips_list(trips_list);
 		r.setPopulateType(populateType);
+		r.setCaption(caption);
 
 		return r;
 	}
@@ -446,9 +460,13 @@ public class IndexController {
 					else
 						populateBarChartPerCity(result.getTrips_list());
 				}
+			} else {
+				initChart();
+				initPieChart();
 			}
 
 			progressIndicator.setProgress(1.0);
+			leftChartLabel.setText((result != null) ? result.getCaption() : "Global Trips in the various cities");
 			status.setText("Ready.");
 
 		});
