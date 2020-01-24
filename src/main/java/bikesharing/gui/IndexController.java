@@ -28,6 +28,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
@@ -72,11 +73,11 @@ public class IndexController {
 	@FXML
 	private ChoiceBox<String> choiceCity;
 	@FXML
+	private ChoiceBox<String> choiceStation;
+	@FXML
 	private ChoiceBox<String> choiceYear;
 	@FXML
-	private ChoiceBox<String> choiceWeek;
-	@FXML
-	private ChoiceBox<String> choiceStation;
+	private Spinner<Integer> choiceWeek;
 
 	/* Generic status indicator for the application */
 	@FXML private Label status;
@@ -90,8 +91,6 @@ public class IndexController {
 	private TextField newPassword;
 
 	/* Various constants and variables */
-	private final String tripsCollection = "trip";
-
 	private File currentFile;
 	private User user;
 
@@ -212,21 +211,6 @@ public class IndexController {
 
 		Path path = Paths.get(currentFile.getPath());
 		status.setText("Selected " + path);
-
-		/*
-		try {
-			if (!Files.probeContentType(path).equals("text/json")) {
-				status.setText("invalid file");
-				Alert alert = new Alert(AlertType.ERROR);
-				alert.setTitle("Error");
-				alert.setHeaderText("Invalid MIME type for file");
-				alert.setContentText("File is not text/json");
-				alert.showAndWait();
-			}
-		} catch (IOException e) {
-			System.err.println("[E] some error occurred");
-			e.printStackTrace();
-		}*/
 	}
 
 	@FXML
@@ -324,7 +308,7 @@ public class IndexController {
         Task<Boolean> task = new Task<Boolean>() {
         	@Override
         	public Boolean call() {
-        		return dm.insertBatch(data, tripsCollection);
+				return dm.insertBatch(data) && dm.updateStationRedundancy();
         	}
         };
         
@@ -484,21 +468,7 @@ public class IndexController {
 					assert(false);
 					break;
 			}
-			
-			/*if (result != null) {
-				if (result.getGender_list() != null)
-					populatePieChart(result.getGender_list());
 
-				if (result.getTrips_list() != null) {
-					if (result.getPopulateType() == 0)
-						populateBarChartPerMonth(result.getTrips_list());
-					else
-						populateBarChartPerCity(result.getTrips_list());
-				}
-			} else {
-
-			}
-*/
 			progressIndicator.setProgress(1.0);
 			leftChartLabel.setText(result.getCaption());
 			status.setText("Ready.");
@@ -564,6 +534,7 @@ public class IndexController {
 	private void byNumberTripsSelected() {
 		choiceWeek.setDisable(true);
 		choiceStation.setDisable(true);
+		// status.setText("Ready");
 	}
 
 	@FXML

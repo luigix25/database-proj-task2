@@ -11,6 +11,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -157,7 +158,7 @@
                                     </VBox>
                                     <VBox>
                                        <children>
-                                          <ChoiceBox fx:id="choiceWeek" prefWidth="150.0" />
+                                          <Spinner fx:id="choiceWeek" editable="true" />
                                           <Label text="Week" />
                                        </children>
                                     </VBox>

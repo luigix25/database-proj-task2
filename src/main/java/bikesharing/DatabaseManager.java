@@ -112,7 +112,7 @@ public class DatabaseManager {
 		return true;
 	}
 	
-	public boolean insertBatch(List<String>data, String collectionName) {
+	public boolean insertBatch(List<String> data) {
 		if (data == null) {
 			System.err.println("No Data");
 			return false;
@@ -147,7 +147,7 @@ public class DatabaseManager {
 		}
 		
 		try {
-			database.getCollection(collectionName).insertMany(documents);
+			database.getCollection("trip").insertMany(documents);
 		} catch(Exception e) {
 			e.printStackTrace();
 			return false;
@@ -156,24 +156,64 @@ public class DatabaseManager {
 		return true;
 	}
 
+	public boolean updateStationRedundancy() {
+		List<Document> documents = new ArrayList<Document>();
+
+		for (String city : getCities()) {
+			List<Bson> pipeline = Arrays.asList(
+					new Document("$match", new Document("city", city)),
+					new Document("$set", new Document("stations", new BsonArray(Arrays.asList(new BsonString("$space.station_start"), new BsonString("$space.station_end"))))),
+					new Document("$project", new Document("stations", 1)),
+					new Document("$limit", 100), // TODO
+			        new Document("$group", new Document("_id", null).append("s", new Document("$addToSet", new Document("$arrayElemAt", new BsonArray(Arrays.asList(new BsonString("$stations"), new BsonInt32(0))))))));
+
+			AggregateIterable<Document> output = database.getCollection("trip").aggregate(pipeline);
+			List<String> stations = null;
+			if (output != null) {
+				Document result = output.first();
+				stations = result.getList("s", String.class);
+			}
+			if (stations == null || stations.isEmpty())
+				continue;
+
+			for (String station : stations) {
+				Document station_doc = new Document();
+				station_doc.append("name", station).append("city", city);
+				documents.add(station_doc);
+			}
+
+			System.err.println("[I] prepared station redundacy for " + city);
+		}
+
+		try {
+			database.getCollection("station").insertMany(documents);
+
+		} catch (Exception e) {
+			return false;
+		}
+
+		return true;
+	}
+	
 	public List<String> getStationsForCity(String city) {
 		List<Bson> pipeline = Arrays.asList(
-		        new Document("$match", new Document("city", city)),
-		        new Document("$set", new Document("stations", new BsonArray(Arrays.asList(new BsonString("$space.station_start"), new BsonString("$space.station_end"))))),
-		        new Document("$project", new Document("stations", 1)), new Document("$limit", 100), // TODO
-		        new Document("$group", new Document("_id", null).append("s", new Document("$addToSet", new Document("$arrayElemAt", new BsonArray(Arrays.asList(new BsonString("$stations"), new BsonInt32(0)))))))
-		);
-
-		AggregateIterable<Document> output = database.getCollection("trip").aggregate(pipeline);
+				new Document("$match", new Document("city", city))
+				);
+		AggregateIterable<Document> output = database.getCollection("station").aggregate(pipeline);
+		
 		if (output == null)
 			return null;
-		Document result = output.first();
-		List<String> stations = null;
-		try {
-			stations = result.getList("s", String.class);
-		} catch (NullPointerException e) {
-			return null;
+		
+		MongoCursor<Document> cursor = output.cursor();
+		List<String> stations = new ArrayList<String>();
+		while (cursor.hasNext()) {
+			Document doc = cursor.next();
+			stations.add(doc.getString("name"));
 		}
+
+		if (stations.isEmpty())
+			return null;
+
 		return stations;
 	}
 	
@@ -505,7 +545,6 @@ public class DatabaseManager {
 	}
 	
 	public boolean insertUser(User user) {
-		
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		try {
 			String json = ow.writeValueAsString(user);
@@ -526,7 +565,6 @@ public class DatabaseManager {
 		if(currentLevel.equals("A")) {
 			return false;
 		} else if(currentLevel.equals("S")) {
-			System.out.println("Promoting to Collaborator");
 			newLevel = "C";
 		} else if(currentLevel.equals("C")) {
 			return false; 
@@ -555,7 +593,6 @@ public class DatabaseManager {
 		if(currentLevel.equals("A")) {
 			return false;
 		} else if(currentLevel.equals("C")) {
-			System.out.println("Demoting to Collaborator");
 			newLevel = "S";
 		} else if(currentLevel.equals("S")) {
 			return false; 
