@@ -176,9 +176,6 @@ public class IndexController {
 		citySelector.getItems().clear();
 		choiceCity.getItems().clear();
 		
-		choiceCity.getItems().add("All");
-		choiceCity.setValue("All");
-		
 		for (String city : cities) {
 			citySelector.getItems().add(city);
 			choiceCity.getItems().add(city);
@@ -188,9 +185,6 @@ public class IndexController {
 	private void setUpYearSelector() {
 		List<Integer> years = dm.getYears();
 		choiceYear.getItems().clear();
-		
-		choiceYear.getItems().add("All");
-		choiceYear.setValue("All");
 		
 		for (Integer year : years) {
 			choiceYear.getItems().add(year.toString());
@@ -578,8 +572,6 @@ public class IndexController {
 	@FXML
 	private void citySelected() {
 		choiceStation.getItems().clear();
-		if (choiceCity.getValue().equals("All"))
-			return;
 		
 		progressIndicator.setProgress(-1.0);
 		status.setText("Loading bike stations for " + choiceCity.getValue());

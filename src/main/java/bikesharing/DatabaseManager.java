@@ -160,21 +160,29 @@ public class DatabaseManager {
 		List<Document> documents = new ArrayList<Document>();
 
 		for (String city : getCities()) {
+			// database.getCollection("station").deleteMany(eq("city", city));
+			System.err.println("[D] preparing redundancy for " + city + " ");
+
 			List<Bson> pipeline = Arrays.asList(
 					new Document("$match", new Document("city", city)),
 					new Document("$set", new Document("stations", new BsonArray(Arrays.asList(new BsonString("$space.station_start"), new BsonString("$space.station_end"))))),
 					new Document("$project", new Document("stations", 1)),
-					new Document("$limit", 100), // TODO
+			        // new Document("$limit", 100), // TODO
 			        new Document("$group", new Document("_id", null).append("s", new Document("$addToSet", new Document("$arrayElemAt", new BsonArray(Arrays.asList(new BsonString("$stations"), new BsonInt32(0))))))));
 
 			AggregateIterable<Document> output = database.getCollection("trip").aggregate(pipeline);
 			List<String> stations = null;
 			if (output != null) {
 				Document result = output.first();
-				stations = result.getList("s", String.class);
+				if (((ArrayList<String>) (result.get("s"))).get(0) != null) {
+					stations = result.getList("s", String.class);
+				}
+				// System.err.println(stations);
 			}
-			if (stations == null || stations.isEmpty())
+			if (stations == null || stations.isEmpty() || stations.get(0) == null) {
+				System.err.println("EMPTY");
 				continue;
+			}
 
 			for (String station : stations) {
 				Document station_doc = new Document();
@@ -182,12 +190,11 @@ public class DatabaseManager {
 				documents.add(station_doc);
 			}
 
-			System.err.println("[I] prepared station redundacy for " + city);
+			System.err.println("OK");
 		}
 
 		try {
 			database.getCollection("station").insertMany(documents);
-
 		} catch (Exception e) {
 			return false;
 		}
