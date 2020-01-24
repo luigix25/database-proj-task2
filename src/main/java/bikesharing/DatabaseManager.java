@@ -280,7 +280,7 @@ public class DatabaseManager {
 	}
 	
 	//Trips for a given city
-	//TOOD: can be optimized!!!
+	// TODO: can be optimized!!!
 	
 	public List<Document> tripsForACity(String city, String collectionName){
 		List<Bson> project = new ArrayList<Bson>();
@@ -326,7 +326,6 @@ public class DatabaseManager {
 	}
 	
 	public List<Document> tripsPerCityYear(String city,int year,String collectionName){		//on a monthly basis
-		
 		List<Bson> project = new ArrayList<Bson>();
 		project.add(Projections.excludeId());
 		project.add(Projections.include("city"));
@@ -644,6 +643,27 @@ public class DatabaseManager {
 		}
 
 		return true;
+	}
+
+	public List<Document> tripsPerStationWeek(String city, String station, int year, int week) {
+		List<Bson> pipeline = Arrays.asList(
+				new Document("$match", new Document("city", city).append("space.station_start", station)),
+				new Document("$set", new Document("time", "$time.timestamp_start")),
+				new Document("$set", new Document("doy",
+						new Document("$dayOfYear", "$time"))
+						.append("dow", new Document("$dayOfWeek", "$time"))
+						.append("year", new Document("$year", "$time"))),
+				new Document("$set", new Document("week", new Document("$floor", new Document("$divide", new BsonArray(Arrays.asList(new BsonString("$doy"), new BsonInt32(7))))))),
+				new Document("$match", new Document("week", week).append("year", year)),
+				new Document("$group", new Document("_id", "$dow").append("count", new Document("$sum", 1)))
+		);
+		
+		AggregateIterable<Document> output = database.getCollection("trip").aggregate(pipeline);
+		
+		System.err.println("[D] " + output);
+		
+
+		return null;
 	}	
 	
 

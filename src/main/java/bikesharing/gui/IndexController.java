@@ -28,7 +28,6 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.Spinner;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
@@ -77,7 +76,7 @@ public class IndexController {
 	@FXML
 	private ChoiceBox<String> choiceYear;
 	@FXML
-	private Spinner<Integer> choiceWeek;
+	private TextField choiceWeek;
 
 	/* Generic status indicator for the application */
 	@FXML private Label status;
@@ -222,8 +221,6 @@ public class IndexController {
 			return;
 		}
 
-		System.out.println(user);
-
 		if (!dm.promoteUser(user))
 			status.setText("Cannot perform this action on this employee");
 		else
@@ -239,8 +236,6 @@ public class IndexController {
 			status.setText("Please select an employee");
 			return;
 		}
-
-		System.out.println(user);
 
 		if (!dm.demoteUser(user))
 			status.setText("Cannot perform this action on this employee");
@@ -383,41 +378,59 @@ public class IndexController {
        
 	}
 	
-	private FilteredResult filterBackend() {
+	private FilteredResult filterBackend(Type type) {
+		System.err.println("[D] filter backend crunching for your " + type + "...");
+		/* data structs that will be returned to the caller */
 		List<Document> gender_list = null;
 		List<Document> trips_list = null;
-		Type type = null;
+		String caption = null;
 
-		String year_string = choiceYear.getValue();
+		/* get input from filter controls from GUI */
+		String city, station;
+		city = choiceCity.getValue();
+		station = choiceStation.getValue();
+		int year, week;
+		try {
+			year = Integer.parseInt(choiceYear.getValue());
+			week = Integer.parseInt(choiceWeek.getText());
+		} catch (NumberFormatException e) {
+			year = week = 0;
+		}
 
-		String caption;
+		System.err.println("[D] Now switching type...");
 
-		// global statistics
-		if (choiceCity.getValue().equals("All") && year_string.equals("All")) {
-			type = Type.GLOBAL;
+		/* perform proper database call depending on type of stat */
+		switch (type) {
+		case GLOBAL:
+			System.err.println("[D] global statistics...");
 			caption = "Global Trips in the various cities";
+			break;
+		case YEAR_ONLY:
+			System.err.println("[D] Year only statistics...");
+			gender_list = dm.tripsPerGender(year, "trip");
+			trips_list = dm.tripsForEachCity(year, "trip");
+			caption = "Trips for the year " + year + " in various cities";
+			break;
+		case CITY_ONLY:
+			System.err.println("[D] City only statistics...");
+			gender_list = dm.tripsPerGender(city, "trip");
+			trips_list = dm.tripsForACity(city, "trip");
+			caption = "Trips during the various months of years in " + city;
+			break;
+		case CITY_AND_YEAR:
+			System.err.println("[D] City and year statistics...");
+			gender_list = dm.tripsPerGender(city, year, "trip");
+			trips_list = dm.tripsPerCityYear(city, year, "trip");
+			caption = "Trips during the various months of year " + year + " in " + city;
+			break;
+		case STATION_AND_WEEK:
+			System.err.println("[D] City, station, year, and week statistics...");
+			trips_list = dm.tripsPerStationWeek(choiceCity.getValue(), choiceStation.getValue(), year, week);
+			caption = "Trips during week " + week + " of year " + year + " at station " + station + " in " + city;
+			break;
 		}
-		// Year Only
-		else if (choiceCity.getValue().equals("All") && !year_string.equals("All")) {
-			gender_list = dm.tripsPerGender(Integer.parseInt(year_string), "trip");
-			trips_list = dm.tripsForEachCity(Integer.parseInt(year_string), "trip");
-			type = Type.YEAR_ONLY;
-			caption = "Trips for the year " + year_string + " in various cities";
-		}
-		// City Only
-		else if (!choiceCity.getValue().equals("All") && year_string.equals("All")) {
-			gender_list = dm.tripsPerGender(choiceCity.getValue(), "trip");
-			trips_list = dm.tripsForACity(choiceCity.getValue(), "trip");
-			caption = "Trips during the various months of years in " + choiceCity.getValue();
-			type = Type.CITY_ONLY;
-		}
-		// Both city and year filter
-		else {
-			gender_list = dm.tripsPerGender(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
-			trips_list = dm.tripsPerCityYear(choiceCity.getValue(), Integer.parseInt(year_string), "trip");
-			caption = "Trips during the various months of year " + year_string + " in " + choiceCity.getValue();
-			type = Type.CITY_AND_YEAR;
-		}
+
+		System.err.println("[D] backend is now giving back results...");
 
 		FilteredResult r = new FilteredResult();
 		r.setGender_list(gender_list);
@@ -430,21 +443,40 @@ public class IndexController {
 
 	@FXML
 	private void filter(ActionEvent event) {
-		status.setText("Please wait a moment...");
+		status.setText("Please wait, be patient and have faith: the database is now crunching for you..." + "☺");
 		progressIndicator.setProgress(-1.0);
 
-		// clear old data chart
-		barChart.getData().clear();
-		pieChart.getData().clear();
-		
+		String year_string = choiceYear.getValue();
+		Type type;
+		if (choiceStation.isDisable()) {
+			if (choiceCity.getValue().equals("All") && year_string.equals("All")) {
+				type = Type.GLOBAL;
+			} else if (choiceCity.getValue().equals("All") && !year_string.equals("All")) {
+				type = Type.YEAR_ONLY;
+			} else if (!choiceCity.getValue().equals("All") && year_string.equals("All")) {
+				type = Type.CITY_ONLY;
+			} else {
+				type = Type.CITY_AND_YEAR;
+			}
+		} else {
+			type = Type.STATION_AND_WEEK;
+		}
+
+		System.err.println("[D] chosen filter is " + type);
+
 		Task<FilteredResult> task = new Task<FilteredResult>() {
 			@Override
 			public FilteredResult call() {
-				return filterBackend();
+				return filterBackend(type);
 			}
 		};
 
 		task.setOnSucceeded(e -> {
+			System.err.println("[D] receiving data from backend...");
+			// clear old data chart
+			barChart.getData().clear();
+			pieChart.getData().clear();
+
 			FilteredResult result = task.getValue();
 
 			switch (result.getType()) {
@@ -534,34 +566,46 @@ public class IndexController {
 	private void byNumberTripsSelected() {
 		choiceWeek.setDisable(true);
 		choiceStation.setDisable(true);
-		// status.setText("Ready");
 	}
 
 	@FXML
 	private void byStationSelected() {
 		choiceWeek.setDisable(false);
 		choiceStation.setDisable(false);
-		status.setText("Please select city");
 	}
 
 	@FXML
 	private void citySelected() {
-		List<String> stations = null;
-		if (choiceCity.getValue() != "All") {
-			stations = dm.getStationsForCity(choiceCity.getValue());
-		}
-		
 		choiceStation.getItems().clear();
-
-		if (stations == null) {
-			status.setText("There are no bike stations in " + choiceCity.getValue());
+		if (choiceCity.getValue().equals("All"))
 			return;
-		}
+		
+		progressIndicator.setProgress(-1.0);
+		status.setText("Loading bike stations for " + choiceCity.getValue());
+		
+		Task<List<String>> task = new Task<List<String>>() {
+			@Override
+			public List<String> call() {
+				return dm.getStationsForCity(choiceCity.getValue());
+			}
+		};
 
-		for (String station : stations) {
-			choiceStation.getItems().add(station);
-		}
-		status.setText("Loaded bike stations for " + choiceCity.getValue());
+		task.setOnSucceeded(e -> {
+			List<String> stations = task.getValue();
+			if (stations == null) {
+				status.setText("There are no bike stations in " + choiceCity.getValue());
+				return;
+			}
+
+			for (String station : stations) {
+				choiceStation.getItems().add(station);
+			}
+			
+			progressIndicator.setProgress(1.0);
+			status.setText("Loaded bike stations for " + choiceCity.getValue());
+		});
+
+		new Thread(task).start();
 
 	}
 
