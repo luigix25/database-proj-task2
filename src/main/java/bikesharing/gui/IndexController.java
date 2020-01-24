@@ -70,6 +70,8 @@ public class IndexController {
 	private Label rightChartLabel;
 
 	@FXML
+	private ChoiceBox<Type> choiceStat;
+	@FXML
 	private ChoiceBox<String> choiceCity;
 	@FXML
 	private ChoiceBox<String> choiceStation;
@@ -108,6 +110,12 @@ public class IndexController {
 		initPieChart();
 		choiceCity.setOnAction((event) -> {
 			this.citySelected();
+		});
+
+		choiceStat.getItems().addAll(Type.values());
+
+		choiceStat.setOnAction((event) -> {
+			this.statSelected();
 		});
 
 	}
@@ -444,7 +452,7 @@ public class IndexController {
 		status.setText("Please wait, be patient and have faith: the database is now crunching for you..." + "☺");
 		progressIndicator.setProgress(-1.0);
 
-		String year_string = choiceYear.getValue();
+		/*String year_string = choiceYear.getValue();
 		Type type;
 		if (choiceStation.isDisable()) {
 			if (choiceCity.getValue().equals("All") && year_string.equals("All")) {
@@ -458,7 +466,9 @@ public class IndexController {
 			}
 		} else {
 			type = Type.STATION_AND_WEEK;
-		}
+		}*/
+		
+		Type type = choiceStat.getValue();
 
 		System.err.println("[D] chosen filter is " + type);
 
@@ -539,7 +549,7 @@ public class IndexController {
 	}
 	
 	private void populateBarChartPerWeek(List<Document> data) {
-		String dowNames[] = { "Monday", "Tuesday", "Wednesday", "Thudrsday", "Friday", "Saturady", "Sunday" };
+		String dowNames[] = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
 
 		for (int i = 1; i <= 7; i++) {
 			XYChart.Series<String, Integer> series1 = new XYChart.Series<String, Integer>();
@@ -591,6 +601,7 @@ public class IndexController {
 		}
 	}
 	
+	/*
 	@FXML
 	private void byNumberTripsSelected() {
 		choiceWeek.setDisable(true);
@@ -601,7 +612,7 @@ public class IndexController {
 	private void byStationSelected() {
 		choiceWeek.setDisable(false);
 		choiceStation.setDisable(false);
-	}
+	}*/
 
 	@FXML
 	private void citySelected() {
@@ -635,6 +646,44 @@ public class IndexController {
 		});
 
 		new Thread(task).start();
+
+	}
+
+	@FXML
+	private void statSelected() {
+		/* enables/disables controls based on selected desiderd stats */
+		switch (choiceStat.getValue()) {
+		case GLOBAL:
+			choiceCity.setDisable(true);
+			choiceStation.setDisable(true);
+			choiceYear.setDisable(true);
+			choiceWeek.setDisable(true);
+			break;
+		case CITY_ONLY:
+			choiceCity.setDisable(false);
+			choiceStation.setDisable(true);
+			choiceYear.setDisable(true);
+			choiceWeek.setDisable(true);
+			break;
+		case YEAR_ONLY:
+			choiceCity.setDisable(true);
+			choiceStation.setDisable(true);
+			choiceYear.setDisable(false);
+			choiceWeek.setDisable(true);
+			break;
+		case CITY_AND_YEAR:
+			choiceCity.setDisable(false);
+			choiceStation.setDisable(true);
+			choiceYear.setDisable(false);
+			choiceWeek.setDisable(true);
+			break;
+		case STATION_AND_WEEK:
+			choiceCity.setDisable(false);
+			choiceStation.setDisable(false);
+			choiceYear.setDisable(false);
+			choiceWeek.setDisable(false);
+			break;
+		}
 
 	}
 
