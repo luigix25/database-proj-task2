@@ -5,8 +5,21 @@ import java.util.List;
 import org.bson.Document;
 
 public class FilteredResult {
-	enum Type {
-		GLOBAL, CITY_ONLY, YEAR_ONLY, CITY_AND_YEAR, STATION_AND_WEEK
+
+	enum Type { /* In java everything is a class, even an enum! O_O */
+		GLOBAL("Global"),
+		CITY_ONLY("by City"),
+		YEAR_ONLY("by Year"),
+		CITY_AND_YEAR("by City and Year"),
+		STATION_AND_WEEK("by Station and Week of Year");
+		
+		private String label;
+		Type(String label) {
+			this.label = label;
+		}		
+		public String toString() {
+			return label;
+		}
 	};
 
 	Type type = null;

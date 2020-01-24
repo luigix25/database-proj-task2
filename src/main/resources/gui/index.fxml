@@ -22,9 +22,9 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bikesharing.gui.IndexController">
+<VBox prefHeight="685.0" prefWidth="873.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bikesharing.gui.IndexController">
    <children>
-      <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="850.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
             <Tab fx:id="manageDatasetTab" text="Manage Dataset">
                <content>
@@ -126,12 +126,18 @@
           </Tab>
           <Tab fx:id="statisticsTab" text="Overall trend">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="567.0" prefWidth="850.0">
                      <children>
                         <VBox prefHeight="566.0" prefWidth="801.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <HBox spacing="20.0">
+                              <HBox prefHeight="59.0" prefWidth="802.0" spacing="20.0">
                                  <children>
+                                    <VBox prefHeight="200.0" prefWidth="100.0">
+                                       <children>
+                                          <Label text="Statistics" />
+                                          <ChoiceBox fx:id="choiceStat" prefWidth="150.0" />
+                                       </children>
+                                    </VBox>
                                     <VBox>
                                        <children>
                                           <Label alignment="CENTER" text="City" />
@@ -157,9 +163,9 @@
                                           <TextField fx:id="choiceWeek" promptText="week number" />
                                        </children>
                                     </VBox>
-                                    <VBox alignment="BOTTOM_CENTER">
+                                    <VBox alignment="BOTTOM_CENTER" prefHeight="68.0" prefWidth="65.0">
                                        <children>
-                                          <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#filter" text="Filter" />
+                                          <Button fx:id="filterButton" alignment="TOP_LEFT" mnemonicParsing="false" onAction="#filter" text="Filter" />
                                        </children>
                                     </VBox>
                                  </children>
@@ -167,13 +173,13 @@
                                     <Insets bottom="24.0" />
                                  </padding>
                               </HBox>
-                              <TabPane prefHeight="559.0" prefWidth="807.0" style="-fx-border-color: #666;" tabClosingPolicy="UNAVAILABLE">
+                              <TabPane prefHeight="451.0" prefWidth="802.0" style="-fx-border-color: #666;" tabClosingPolicy="UNAVAILABLE">
                                 <tabs>
-                                  <Tab onSelectionChanged="#byNumberTripsSelected" text="By Number of Trips">
+                                  <Tab text="By Number of Trips">
                                     <content>
                                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="432.0" prefWidth="807.0">
                                              <children>
-                                                <HBox prefHeight="510.0" prefWidth="753.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                <HBox prefHeight="392.0" prefWidth="825.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-25.0" AnchorPane.topAnchor="0.0">
                                                    <children>
                                                       <VBox>
                                                          <children>
@@ -198,11 +204,6 @@
                                                 </HBox>
                                              </children>
                                           </AnchorPane>
-                                    </content>
-                                  </Tab>
-                                  <Tab onSelectionChanged="#byStationSelected" text="By Station">
-                                    <content>
-                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                     </content>
                                   </Tab>
                                 </tabs>
