@@ -575,17 +575,22 @@ public class IndexController {
 
 	@FXML
 	private void citySelected() {
-		System.err.println("[D] selected city");
-		// do the query for stations of this city
 		List<String> stations = null;
 		if (choiceCity.getValue() != "All") {
 			stations = dm.getStationsForCity(choiceCity.getValue());
 		}
 		
 		choiceStation.getItems().clear();
+
+		if (stations == null) {
+			status.setText("There are no bike stations in " + choiceCity.getValue());
+			return;
+		}
+
 		for (String station : stations) {
 			choiceStation.getItems().add(station);
 		}
+		status.setText("Loaded bike stations for " + choiceCity.getValue());
 
 	}
 

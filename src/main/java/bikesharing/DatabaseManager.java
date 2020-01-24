@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bson.BsonArray;
+import org.bson.BsonInt32;
+import org.bson.BsonString;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -19,6 +22,7 @@ import org.codehaus.jackson.map.ObjectWriter;
 
 import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -153,18 +157,29 @@ public class DatabaseManager {
 	}
 
 	public List<String> getStationsForCity(String city) {
-		// TODO -- come razzo si scrive sta query?
-		// SELECT DISTINCT trip.space.stazione FROM trip
-		List<String> list = new ArrayList<String>();
-		list.add("Pomarance");
-		list.add("Pisa Centrale");
-		list.add("Pisa S. Rossore");
-		return list;
+		List<Bson> pipeline = Arrays.asList(
+		        new Document("$match", new Document("city", city)),
+		        new Document("$set", new Document("stations", new BsonArray(Arrays.asList(new BsonString("$space.station_start"), new BsonString("$space.station_end"))))),
+		        new Document("$project", new Document("stations", 1)), new Document("$limit", 100), // TODO
+		        new Document("$group", new Document("_id", null).append("s", new Document("$addToSet", new Document("$arrayElemAt", new BsonArray(Arrays.asList(new BsonString("$stations"), new BsonInt32(0)))))))
+		);
+
+		AggregateIterable<Document> output = database.getCollection("trip").aggregate(pipeline);
+		if (output == null)
+			return null;
+		Document result = output.first();
+		List<String> stations = null;
+		try {
+			stations = result.getList("s", String.class);
+		} catch (NullPointerException e) {
+			return null;
+		}
+		return stations;
 	}
 	
 
 	//AnyTime
-	public List<Document> tripsForEachCity(String collectionName){
+	public List<Document> tripsForEachCity(String collectionName) {
 		List<Bson> project = new ArrayList<Bson>();
 		project.add(Projections.excludeId());
 		project.add(Projections.include("trips"));
@@ -518,7 +533,7 @@ public class DatabaseManager {
 		}
 		
 		List<Bson> pipeline = Arrays.asList(
-				Aggregates.addFields(new Field<String>("status",newLevel))
+		        Aggregates.addFields(new Field<String>("status", newLevel))
 		);
 		
 		try {
