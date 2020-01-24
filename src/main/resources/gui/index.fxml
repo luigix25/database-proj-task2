@@ -165,7 +165,7 @@
                                     </VBox>
                                     <VBox alignment="BOTTOM_CENTER" prefHeight="68.0" prefWidth="65.0">
                                        <children>
-                                          <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#filter" text="Filter" />
+                                          <Button fx:id="filterButton" alignment="TOP_LEFT" mnemonicParsing="false" onAction="#filter" text="Filter" />
                                        </children>
                                     </VBox>
                                  </children>
