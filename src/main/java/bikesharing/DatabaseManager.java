@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.bson.BsonArray;
 import org.bson.BsonInt32;
@@ -162,7 +161,7 @@ public class DatabaseManager {
 		List<Document> documents = new ArrayList<Document>();
 
 		for (String city : getCities()) {
-			// database.getCollection("station").deleteMany(eq("city", city));
+			database.getCollection("station").deleteMany(eq("city", city));
 			System.err.println("[D] preparing redundancy for " + city + " ");
 
 			List<Bson> pipeline = Arrays.asList(
