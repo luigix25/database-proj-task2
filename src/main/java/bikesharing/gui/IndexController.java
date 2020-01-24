@@ -495,6 +495,7 @@ public class IndexController {
 					populateBarChartPerMonth(result.getTrips_list());
 					break;
 				case STATION_AND_WEEK:
+				populateBarChartPerWeek(result.getTrips_list());
 				/* TODO show graph */
 				for (Document doc : result.getTrips_list()) {
 					System.out.println(doc.get("_id") + "\t" + doc.get("count"));
@@ -537,6 +538,33 @@ public class IndexController {
 		
 	}
 	
+	private void populateBarChartPerWeek(List<Document> data) {
+		String dowNames[] = { "Monday", "Tuesday", "Wednesday", "Thudrsday", "Friday", "Saturady", "Sunday" };
+
+		for (int i = 1; i <= 7; i++) {
+			XYChart.Series<String, Integer> series1 = new XYChart.Series<String, Integer>();
+			series1.setName(Integer.toString(i));
+			series1.getData().clear();
+
+			for (Document document : data) {
+
+				int dow = document.getInteger("_id");
+				int trips = document.getInteger("count");
+
+				if (dow == i)
+					series1.getData().add(new XYChart.Data<String, Integer>(dowNames[dow - 1], trips));
+
+			}
+
+			if (series1.getData().isEmpty() == true) {
+				series1.getData().add(new XYChart.Data<String, Integer>(Integer.toString(i), 0));
+			}
+
+			barChart.getData().add(series1);
+		}
+
+	}
+
 	private void populateBarChartPerCity(List<Document>data) {
 		barChart.getData().clear();
 
