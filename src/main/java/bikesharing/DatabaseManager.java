@@ -10,7 +10,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bson.BsonArray;
 import org.bson.BsonInt32;
@@ -195,6 +197,8 @@ public class DatabaseManager {
 		return true;
 	}
 	
+	
+	
 	public List<String> getStationsForCity(String city) {
 		List<Bson> pipeline = Arrays.asList(
 				new Document("$match", new Document("city", city))
@@ -213,7 +217,11 @@ public class DatabaseManager {
 
 		if (stations.isEmpty())
 			return null;
-
+		
+		Collections.sort(stations, (d1, d2) -> {
+			return Integer.parseInt(d1.substring(4)) - Integer.parseInt(d2.substring(4));
+		});
+				
 		return stations;
 	}
 	
