@@ -397,8 +397,6 @@ public class IndexController {
 			year = week = 0;
 		}
 
-		System.err.println("[D] Now switching type...");
-
 		/* perform proper database call depending on type of stat */
 		switch (type) {
 		case GLOBAL:
@@ -497,7 +495,10 @@ public class IndexController {
 					populateBarChartPerMonth(result.getTrips_list());
 					break;
 				case STATION_AND_WEEK:
-					assert(false);
+				/* TODO show graph */
+				for (Document doc : result.getTrips_list()) {
+					System.out.println(doc.get("_id") + "\t" + doc.get("count"));
+				}
 					break;
 			}
 

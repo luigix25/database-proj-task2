@@ -659,11 +659,18 @@ public class DatabaseManager {
 		);
 		
 		AggregateIterable<Document> output = database.getCollection("trip").aggregate(pipeline);
+		System.err.println("[D] Done");
 		
-		System.err.println("[D] " + output);
+		MongoCursor<Document> cursor = output.cursor();
 		
+		List<Document> list = new ArrayList<Document>();
 
-		return null;
+		while (cursor.hasNext()) {
+			list.add(cursor.next());
+
+		}
+
+		return list;
 	}	
 	
 
