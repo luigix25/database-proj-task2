@@ -97,8 +97,6 @@ public class IndexController {
 		setUpCitySelector();
 		setUpYearSelector();
 		initTable();
-		initChart();
-		initPieChart();
 		choiceCity.setOnAction((event) -> {
 			this.citySelected();
 		});

@@ -8,7 +8,8 @@ public class FilteredResult {
 
 	enum Type { /* In java everything is a class, even an enum! O_O */
 		GLOBAL("Global"),
-		CITY_SHOW_MONTH("by City, show months"), CITY_SHOW_YEAR("by City, show years"),
+		CITY_SHOW_MONTH("by City, show months"),
+		CITY_SHOW_YEAR("by City, show years"),
 		YEAR_ONLY("by Year"),
 		CITY_AND_YEAR("by City and Year"),
 		STATION_AND_WEEK("by Station and Week of Year");

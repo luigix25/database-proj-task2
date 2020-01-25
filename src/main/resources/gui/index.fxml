@@ -132,10 +132,10 @@
                            <children>
                               <HBox prefHeight="59.0" prefWidth="802.0" spacing="20.0">
                                  <children>
-                                    <VBox prefHeight="200.0" prefWidth="100.0">
+                                    <VBox prefHeight="42.0" prefWidth="149.0">
                                        <children>
                                           <Label text="Statistics" />
-                                          <ChoiceBox fx:id="choiceStat" prefWidth="150.0" />
+                                          <ChoiceBox fx:id="choiceStat" prefHeight="26.0" prefWidth="142.0" />
                                        </children>
                                     </VBox>
                                     <VBox>
@@ -160,7 +160,7 @@
                                     <VBox>
                                        <children>
                                           <Label text="Week" />
-                                          <TextField fx:id="choiceWeek" promptText="week number" />
+                                          <TextField fx:id="choiceWeek" prefHeight="26.0" prefWidth="79.0" promptText="week #" />
                                        </children>
                                     </VBox>
                                     <VBox alignment="BOTTOM_CENTER" prefHeight="68.0" prefWidth="65.0">

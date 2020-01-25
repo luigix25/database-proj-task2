@@ -157,6 +157,7 @@ public class DatabaseManager {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean updateStationRedundancy() {
 		List<Document> documents = new ArrayList<Document>();
 
@@ -175,7 +176,7 @@ public class DatabaseManager {
 			List<String> stations = null;
 			if (output != null) {
 				Document result = output.first();
-				if (((ArrayList<String>) (result.get("s"))).get(0) != null) {
+				if (((ArrayList<String>) (result.get("s"))).get(0) != null) {/* safe type conversion, as long as database is not screwed up */
 					stations = result.getList("s", String.class);
 				}
 			}
