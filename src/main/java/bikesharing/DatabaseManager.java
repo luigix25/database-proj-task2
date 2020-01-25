@@ -178,7 +178,6 @@ public class DatabaseManager {
 				if (((ArrayList<String>) (result.get("s"))).get(0) != null) {
 					stations = result.getList("s", String.class);
 				}
-				// System.err.println(stations);
 			}
 			if (stations == null || stations.isEmpty() || stations.get(0) == null) {
 				System.err.println("EMPTY");
@@ -203,8 +202,6 @@ public class DatabaseManager {
 		return true;
 	}
 	
-	
-	
 	public List<String> getStationsForCity(String city) {
 		List<Bson> pipeline = Arrays.asList(
 				new Document("$match", new Document("city", city))
@@ -220,6 +217,8 @@ public class DatabaseManager {
 			Document doc = cursor.next();
 			stations.add(doc.getString("name"));
 		}
+
+		cursor.close();
 
 		if (stations.isEmpty())
 			return null;
@@ -260,6 +259,26 @@ public class DatabaseManager {
 		
 	}
 	
+	// trips for each city for various years
+	public List<Document> tripsForCityDuringYears(String city) {
+		ArrayList<Field<?>> addYear = new ArrayList<Field<?>>();
+		addYear.add(new Field<Document>("year", new Document("$year", "$time.timestamp_start")));
+
+		List<Bson> pipeline = Arrays.asList(Aggregates.match(new Document("city", city)), Aggregates.addFields(addYear), Aggregates.group("$year", Accumulators.sum("count", 1)));
+
+		MongoCursor<Document> cursor = database.getCollection("trip").aggregate(pipeline).iterator();
+
+		List<Document> result = new ArrayList<Document>();
+
+		while (cursor.hasNext()) {
+			result.add(cursor.next());
+		}
+
+		cursor.close();
+
+		return result;
+	}
+
 	//For a Given Year
 	public List<Document> tripsForEachCity(int year, String collectionName){
 		List<Bson> project = new ArrayList<Bson>();
@@ -681,8 +700,9 @@ public class DatabaseManager {
 
 		while (cursor.hasNext()) {
 			list.add(cursor.next());
-
 		}
+
+		cursor.close();
 
 		return list;
 	}	

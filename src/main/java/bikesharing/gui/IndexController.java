@@ -396,29 +396,28 @@ public class IndexController {
 		/* perform proper database call depending on type of stat */
 		switch (type) {
 		case GLOBAL:
-			System.err.println("[D] global statistics...");
 			caption = "Global Trips in the various cities";
 			break;
 		case YEAR_ONLY:
-			System.err.println("[D] Year only statistics...");
 			gender_list = dm.tripsPerGender(year, "trip");
 			trips_list = dm.tripsForEachCity(year, "trip");
 			caption = "Trips for the year " + year + " in various cities";
 			break;
-		case CITY_ONLY:
-			System.err.println("[D] City only statistics...");
+		case CITY_SHOW_MONTH:
 			gender_list = dm.tripsPerGender(city, "trip");
 			trips_list = dm.tripsForACity(city, "trip");
 			caption = "Trips during the various months of years in " + city;
 			break;
+		case CITY_SHOW_YEAR:
+			trips_list = dm.tripsForCityDuringYears(city);
+			caption = "Trips during the various years in " + city;
+			break;
 		case CITY_AND_YEAR:
-			System.err.println("[D] City and year statistics...");
 			gender_list = dm.tripsPerGender(city, year, "trip");
 			trips_list = dm.tripsPerCityYear(city, year, "trip");
 			caption = "Trips during the various months of year " + year + " in " + city;
 			break;
 		case STATION_AND_WEEK:
-			System.err.println("[D] City, station, year, and week statistics...");
 			trips_list = dm.tripsPerStationWeek(choiceCity.getValue(), choiceStation.getValue(), year, week);
 			caption = "Trips during week " + week + " of year " + year + " at station " + station + " in " + city;
 			break;
@@ -468,9 +467,12 @@ public class IndexController {
 					populatePieChart(result.getGender_list());
 					populateBarChartPerCity(result.getTrips_list());
 					break;
-				case CITY_ONLY:
+				case CITY_SHOW_MONTH:
 					populatePieChart(result.getGender_list());
 					populateBarChartPerMonth(result.getTrips_list());
+					break;
+				case CITY_SHOW_YEAR:
+					populateBarChartPerYear(result.getTrips_list());
 					break;
 				case CITY_AND_YEAR:
 					populatePieChart(result.getGender_list());
@@ -541,6 +543,37 @@ public class IndexController {
 			barChart.getData().add(series1);
 		}
 
+	}
+
+	private void populateBarChartPerYear(List<Document> data) {
+		int base_year = Integer.MAX_VALUE;
+
+		for (Document document : data) {
+			int year = document.getInteger("_id");
+			if (year < base_year)
+				base_year = year;
+		}
+
+		for (int i = base_year; i < base_year + data.size(); ++i) {
+			XYChart.Series<String, Integer> series1 = new XYChart.Series<String, Integer>();
+			series1.setName(Integer.toString(i));
+			series1.getData().clear();
+
+			for (Document document : data) {
+				int year = document.getInteger("_id");
+				int count = document.getInteger("count");
+
+				if (year == i)
+					series1.getData().add(new XYChart.Data<String, Integer>(Integer.toString(i), count));
+			}
+
+			if (series1.getData().isEmpty() == true) {
+				series1.getData().add(new XYChart.Data<String, Integer>(Integer.toString(i), 0));
+			}
+
+			barChart.getData().add(series1);
+
+		}
 	}
 
 	private void populateBarChartPerCity(List<Document>data) {
@@ -623,7 +656,8 @@ public class IndexController {
 			choiceYear.setDisable(true);
 			choiceWeek.setDisable(true);
 			break;
-		case CITY_ONLY:
+		case CITY_SHOW_MONTH:
+		case CITY_SHOW_YEAR:
 			choiceCity.setDisable(false);
 			choiceStation.setDisable(true);
 			choiceYear.setDisable(true);
