@@ -535,7 +535,7 @@ public class DatabaseManager {
 	public List<String> getCities(){
 		List<String> cities = new ArrayList<String>();
 		
-		MongoCursor<String> cursor = database.getCollection("trip").distinct("city", String.class).iterator();
+		MongoCursor<String> cursor = database.getCollection("station").distinct("city", String.class).iterator();
 		while(cursor.hasNext()) {
 			cities.add(cursor.next());
 		}
@@ -543,11 +543,11 @@ public class DatabaseManager {
 		return cities;
 	}
 	
-	public List<Integer> getYears(){
+	/*public List<Integer> getYears(){
 		List<Integer> years = new ArrayList<Integer>();
 		
 		ArrayList<Field<?>> addYear = new ArrayList<Field<?>>();
-		addYear.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
+		//addYear.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
 		
 		List<Bson> pipeline = Arrays.asList(
 				//Add Year Field
@@ -575,6 +575,20 @@ public class DatabaseManager {
 		
 		
 		return years;
+	}*/
+	
+	public List<Integer> getYears(){
+
+		List<Integer> years = new ArrayList<Integer>();
+		MongoCursor<Integer> cursor = database.getCollection("trip").distinct("time.year", Integer.class).iterator();
+		
+		while(cursor.hasNext()) {
+			int year = cursor.next();									
+			years.add(year);
+		}
+		
+		return years;
+		
 	}
 	
 	public boolean insertUser(User user) {
