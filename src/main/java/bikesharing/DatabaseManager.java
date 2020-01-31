@@ -21,14 +21,18 @@ import org.bson.conversions.Bson;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
 
+import com.mongodb.MongoException;
+import com.mongodb.MongoWriteException;
 import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.TransactionBody;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.BsonField;
@@ -106,7 +110,7 @@ public class DatabaseManager {
 		try {
 			Document document = Document.parse(data);
 			database.getCollection(collectionName).insertOne(document);
-		} catch(Exception e) {
+		} catch(MongoException e) {
 			e.printStackTrace();
 			return false;
 		}
@@ -147,12 +151,44 @@ public class DatabaseManager {
 			documents.add(doc);
 		}
 		
-		try {
-			database.getCollection("trip").insertMany(documents);
-		} catch(Exception e) {
-			e.printStackTrace();
-			return false;
+		final ClientSession clientSession = mongoClient.startSession();
+		
+		for(Document doc : documents) {
+		
+			TransactionBody<String> txnBody = new TransactionBody<String>() {
+			    public String execute() {
+			        MongoCollection<Document> trip = database.getCollection("trip");
+			        MongoCollection<Document> station = database.getCollection("station");
+	
+			        
+			        //This one will be catched by the caller
+			        trip.insertOne(clientSession,doc);
+			        
+			        try {
+			        	station.insertOne(clientSession, doc);
+			        } catch(MongoWriteException e) {
+			        	//Duplicate error
+			        	if(e.getCode() != 11000) {
+			        		throw e;
+			        	}
+			        }
+			        
+			        return "";
+			    }
+			};
+			try {
+			    /*
+			       Step 4: Use .withTransaction() to start a transaction,
+			       execute the callback, and commit (or abort on error).
+			    */
+	
+			    clientSession.withTransaction(txnBody);
+			} catch (RuntimeException e) {
+				return false;
+			} 
 		}
+		
+		clientSession.close();
 				
 		return true;
 	}
