@@ -25,6 +25,7 @@ with open('../datasets/la.csv', newline='') as csvfile:
 		time_start 	= datetime.datetime.strptime(re.sub('201\\d', str(year), row["start_time"]), current_timestamp_format)
 		time_end 	= datetime.datetime.strptime(re.sub('201\\d', str(year), row["end_time"]), current_timestamp_format)
 
+		time["year"] = year
 		time["timestamp_start"] = datetime.datetime.strftime(time_start,standard_timestamp_format)
 		time["timestamp_end"] 	= datetime.datetime.strftime(time_end,standard_timestamp_format)
 

@@ -19,17 +19,9 @@ with open('../datasets/newyork.csv', newline='') as csvfile:
 		# substitute year to make data uniform
 		year = 2015 + count % 4
 		count += 1
+		time["year"] = year
 		time["timestamp_start"] = re.sub('201\\d', str(year), row["pickup_datetime"])
 		time["timestamp_end"] 	= re.sub('201\\d', str(year), row["dropoff_datetime"])
-
-		#time["timestamp_start"] = row["pickup_datetime"]
-		#time["timestamp_end"] = row["dropoff_datetime"]
-
-		#start_station_id 	= row["start_station_id"][:-2]
-		#end_station_id 		= row["end_station_id"][:-2]
-
-		#space["station_start"] 	= city_tag +":"+ start_station_id
-		#space["station_end"] 	= city_tag +":"+ end_station_id
 
 		space["latitude_start"] = row["pickup_latitude"]
 		space["latitude_end"] 	= row["dropoff_latitude"]

@@ -18,6 +18,7 @@ with open('../datasets/chicago.csv') as csvfile:
 
 		count += 1
 		year = 2015 + count % 4
+		time["year"] = year
 		time["timestamp_start"] = re.sub('201\\d', str(year), row["starttime"])
 		time["timestamp_end"] 	= re.sub('201\\d', str(year), row["stoptime"])
 
