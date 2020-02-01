@@ -65,7 +65,7 @@ public class DatabaseManager {
 			mongoURL += hosts[i].getHost() + ":" + Integer.toString(hosts[i].getPort());
 			if (i != (hosts.length - 1)) mongoURL += ",";
 		}
-		mongoURL += "/?replicaSet=BSSReplica";
+		mongoURL += "/?replicaSet=BSSReplica&readPreference=secondary";
 		System.err.println("[D] connecting to URL: " + mongoURL);
 		
 		/* actually connect */
