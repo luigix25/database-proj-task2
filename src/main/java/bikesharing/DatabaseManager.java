@@ -155,8 +155,8 @@ public class DatabaseManager {
 		
 		for(Document doc : documents) {
 		
-			TransactionBody<String> txnBody = new TransactionBody<String>() {
-			    public String execute() {
+			TransactionBody<Void> txnBody = new TransactionBody<Void>() {
+			    public Void execute() {
 			        MongoCollection<Document> trip = database.getCollection("trip");
 			        MongoCollection<Document> station = database.getCollection("station");
 	
@@ -167,13 +167,13 @@ public class DatabaseManager {
 			        try {
 			        	station.insertOne(clientSession, doc);
 			        } catch(MongoWriteException e) {
-			        	//Duplicate error
+			        	// Duplicate error
+			        	// System.err.println("[D] Duplicate detected");
 			        	if(e.getCode() != 11000) {
 			        		throw e;
 			        	}
 			        }
-			        
-			        return "";
+					return null;
 			    }
 			};
 			try {
@@ -184,6 +184,7 @@ public class DatabaseManager {
 	
 			    clientSession.withTransaction(txnBody);
 			} catch (RuntimeException e) {
+				e.printStackTrace();
 				return false;
 			} 
 		}
