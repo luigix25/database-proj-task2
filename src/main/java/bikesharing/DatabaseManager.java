@@ -159,8 +159,8 @@ public class DatabaseManager {
 		
 		for(Document doc : documents) {
 		
-			TransactionBody<String> txnBody = new TransactionBody<String>() {
-			    public String execute() {
+			TransactionBody<Void> txnBody = new TransactionBody<Void>() {
+			    public Void execute() {
 			        MongoCollection<Document> trip = database.getCollection("trip");
 			        MongoCollection<Document> station = database.getCollection("station");
 			        
@@ -186,7 +186,7 @@ public class DatabaseManager {
 			        if(station_end != null)
 			        	station.replaceOne(station_end, station_end, options);
 			        
-			        return "";
+			        return null;
 			    }
 			};
 			try {
