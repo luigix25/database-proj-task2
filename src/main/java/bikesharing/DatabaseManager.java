@@ -22,7 +22,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
 
 import com.mongodb.MongoException;
-import com.mongodb.MongoWriteException;
 import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.AggregateIterable;
@@ -39,6 +38,7 @@ import com.mongodb.client.model.BsonField;
 import com.mongodb.client.model.Field;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.result.DeleteResult;
 
 public class DatabaseManager {
@@ -124,6 +124,7 @@ public class DatabaseManager {
 		}
 			
 		List<Document> documents = new ArrayList<Document>();
+
 		for(String json : data) {
 			Document doc;
 			try {
@@ -148,10 +149,13 @@ public class DatabaseManager {
 				e.printStackTrace();
 				return false;
 			}
-			documents.add(doc);
+			documents.add(doc);			
 		}
 		
 		final ClientSession clientSession = mongoClient.startSession();
+				
+		ReplaceOptions options = new ReplaceOptions();
+		options.upsert(true);
 		
 		for(Document doc : documents) {
 		
@@ -159,19 +163,28 @@ public class DatabaseManager {
 			    public String execute() {
 			        MongoCollection<Document> trip = database.getCollection("trip");
 			        MongoCollection<Document> station = database.getCollection("station");
-	
 			        
+			        Document space = (Document)doc.get("space");
+	
+			        Document station_start = null;
+			        Document station_end = null;
+			        
+			        if(space.containsKey("station_start")) {
+			        	station_start = new Document().append("city", doc.getString("city")).append("name", space.getString("station_start"));
+			        }
+			        
+			        if(space.containsKey("station_end")) {
+			        	station_end = new Document().append("city", doc.getString("city")).append("name", space.getString("station_end"));
+			        }
+			        			        
 			        //This one will be catched by the caller
 			        trip.insertOne(clientSession,doc);
 			        
-			        try {
-			        	station.insertOne(clientSession, doc);
-			        } catch(MongoWriteException e) {
-			        	//Duplicate error
-			        	if(e.getCode() != 11000) {
-			        		throw e;
-			        	}
-			        }
+			        if(station_start != null)
+			        	station.replaceOne(station_start, station_start, options);
+			    
+			        if(station_end != null)
+			        	station.replaceOne(station_end, station_end, options);
 			        
 			        return "";
 			    }
@@ -184,6 +197,7 @@ public class DatabaseManager {
 	
 			    clientSession.withTransaction(txnBody);
 			} catch (RuntimeException e) {
+				e.printStackTrace();
 				return false;
 			} 
 		}
