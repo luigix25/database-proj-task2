@@ -314,7 +314,10 @@ public class DatabaseManager {
 		ArrayList<Field<?>> addYear = new ArrayList<Field<?>>();
 		addYear.add(new Field<Document>("year", new Document("$year", "$time.timestamp_start")));
 
-		List<Bson> pipeline = Arrays.asList(Aggregates.match(new Document("city", city)), Aggregates.addFields(addYear), Aggregates.group("$year", Accumulators.sum("count", 1)));
+		List<Bson> pipeline = Arrays.asList(
+				Aggregates.match(new Document("city", city)), 
+				//Aggregates.addFields(addYear), useless using redundancy 
+				Aggregates.group("$year", Accumulators.sum("count", 1)));
 
 		MongoCursor<Document> cursor = database.getCollection("trip").aggregate(pipeline).iterator();
 
