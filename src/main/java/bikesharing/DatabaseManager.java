@@ -273,9 +273,31 @@ public class DatabaseManager {
 		if (stations.isEmpty())
 			return null;
 
-		Collections.sort(stations, (d1, d2) -> {
-			return Integer.parseInt(d1.substring(4)) - Integer.parseInt(d2.substring(4));
-		});
+		/*Collections.sort(stations, (d1, d2) -> {
+			String s1 = (d1.split(":"))[1];
+			String s2 = (d2.split(":"))[1];
+
+			
+			
+			//System.out.println("s1 "+s1);
+			//System.out.println("s2 "+s2);
+			
+			int n = 0;
+			try {
+				int n1 = Integer.parseInt(s1);
+				int n2 = Integer.parseInt(s2);
+				
+				System.out.println("n1 "+n1);
+				System.out.println("n2 "+n2);
+				
+				n = n1 - n2;
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+			System.out.println(n);
+			return n;
+		});*/
 
 		return stations;
 	}
@@ -316,8 +338,8 @@ public class DatabaseManager {
 
 		List<Bson> pipeline = Arrays.asList(
 				Aggregates.match(new Document("city", city)), 
-				//Aggregates.addFields(addYear), useless using redundancy 
-				Aggregates.group("$year", Accumulators.sum("count", 1)));
+				//Aggregates.addFields(addYear),  
+				Aggregates.group("$time.year", Accumulators.sum("count", 1)));
 
 		MongoCursor<Document> cursor = database.getCollection("trip").aggregate(pipeline).iterator();
 
@@ -343,8 +365,8 @@ public class DatabaseManager {
 		addYear.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
 
 		List<Bson> pipeline = Arrays.asList(
-				Aggregates.addFields(addYear),
-				Aggregates.match(new Document("year",year)),
+				//Aggregates.addFields(addYear),
+				Aggregates.match(new Document("time.year",year)),
 				Aggregates.group("$city", Accumulators.sum("trips", 1)),
 				Aggregates.project(Projections.fields(project))
 		);
@@ -375,7 +397,7 @@ public class DatabaseManager {
 		project.add(Projections.include("trips"));
 
 		ArrayList<Field<?>> addDates = new ArrayList<Field<?>>();
-		addDates.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
+//		addDates.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
 		addDates.add(new Field<Document>("month",new Document("$month","$time.timestamp_start")));
 
 		List<Bson> pipeline = Arrays.asList(
@@ -385,7 +407,7 @@ public class DatabaseManager {
 				//Group by Month
 				Aggregates.group("$month", Accumulators.sum("trips", 1),
 						//Otherwise these fields will be lost
-						new BsonField("year", new Document("$first","$year")),
+						new BsonField("year", new Document("$first","$time.year")),
 						new BsonField("city", new Document("$first","$city")),
 						new BsonField("month", new Document("$first","$month"))
 				),
@@ -418,7 +440,7 @@ public class DatabaseManager {
 		project.add(Projections.include("trips"));
 
 		ArrayList<Field<?>> addDates = new ArrayList<Field<?>>();
-		addDates.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
+//		addDates.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
 		addDates.add(new Field<Document>("month",new Document("$month","$time.timestamp_start")));
 
 		List<Bson> pipeline = Arrays.asList(
@@ -426,11 +448,11 @@ public class DatabaseManager {
 				Aggregates.match(new Document("city",city)),
 				Aggregates.addFields(addDates),
 				//Filter by Year
-				Aggregates.match(new Document("year",year)),
+				Aggregates.match(new Document("time.year",year)),
 				//Group by Month
 				Aggregates.group("$month", Accumulators.sum("trips", 1),
 						//Otherwise these fields will be lost
-						new BsonField("year", new Document("$first","$year")),
+						new BsonField("year", new Document("$first","$time.year")),
 						new BsonField("city", new Document("$first","$city")),
 						new BsonField("month", new Document("$first","$month"))
 				),
@@ -462,8 +484,8 @@ public class DatabaseManager {
 
 		List<Bson> pipeline = Arrays.asList(
 				Aggregates.match(Filters.eq("city", city)),
-				Aggregates.addFields(new Field<Document>("year",new Document("$year","$time.timestamp_start"))),
-				Aggregates.match(Filters.eq("year", year)),
+				//Aggregates.addFields(new Field<Document>("year",new Document("$year","$time.timestamp_start"))),
+				Aggregates.match(Filters.eq("time.year", year)),
 				Aggregates.group("$rider.gender", Accumulators.sum("count", 1)),
 				Aggregates.project(Projections.fields(projections))
 		);
@@ -513,8 +535,8 @@ public class DatabaseManager {
 		projections.add(new Document("gender","$_id"));
 
 		List<Bson> pipeline = Arrays.asList(
-				Aggregates.addFields(new Field<Document>("year",new Document("$year","$time.timestamp_start"))),
-				Aggregates.match(Filters.eq("year", year)),
+				//Aggregates.addFields(new Field<Document>("year",new Document("$year","$time.timestamp_start"))),
+				Aggregates.match(Filters.eq("time.year", year)),
 				Aggregates.group("$rider.gender", Accumulators.sum("count", 1)),
 				Aggregates.project(Projections.fields(projections))
 		);
