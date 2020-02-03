@@ -11,7 +11,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.BsonArray;
 import org.bson.BsonInt32;
@@ -55,6 +57,8 @@ public class DatabaseManager {
 
 	private final String databaseName = "ducange";
 
+	private Map<String,List<String>> stationsCache;
+	
 	private MongoClient mongoClient;
 	private MongoDatabase database;
 
@@ -71,6 +75,8 @@ public class DatabaseManager {
 		/* actually connect */
 		mongoClient = MongoClients.create(mongoURL);
 		database = mongoClient.getDatabase(databaseName);
+		
+		stationsCache = new HashMap<String,List<String>>();
 	}
 
 	public static DatabaseManager getInstance() {
@@ -253,6 +259,11 @@ public class DatabaseManager {
 	}
 
 	public List<String> getStationsForCity(String city) {
+		
+		if(stationsCache.containsKey(city)) {
+			return stationsCache.get(city);
+		}
+			
 		List<Bson> pipeline = Arrays.asList(
 				new Document("$match", new Document("city", city))
 				);
@@ -278,17 +289,10 @@ public class DatabaseManager {
 			String s2 = (d2.split(":"))[1];
 
 			
-			
-			//System.out.println("s1 "+s1);
-			//System.out.println("s2 "+s2);
-			
 			int n = 0;
 			try {
 				int n1 = Integer.parseInt(s1);
 				int n2 = Integer.parseInt(s2);
-				
-				System.out.println("n1 "+n1);
-				System.out.println("n2 "+n2);
 				
 				n = n1 - n2;
 			}catch(Exception e) {
@@ -299,6 +303,8 @@ public class DatabaseManager {
 			return n;
 		});*/
 
+		
+		stationsCache.put(city, stations);
 		return stations;
 	}
 
