@@ -64,6 +64,9 @@ public class DatabaseManager {
 			mongoURL += hosts[i].getHost() + ":" + Integer.toString(hosts[i].getPort());
 			if (i != (hosts.length - 1)) mongoURL += ",";
 		}
+		
+		//Specifies that reads are preferred on the secondaries replicas
+		
 		mongoURL += "/?replicaSet=BSSReplica&readPreference=secondary";
 		System.err.println("[D] connecting to URL: " + mongoURL);
 
@@ -72,6 +75,8 @@ public class DatabaseManager {
 		database = mongoClient.getDatabase(databaseName);
 	}
 
+	
+	//for singleton
 	public static DatabaseManager getInstance() {
 		if(instance == null) {
 			instance = new DatabaseManager();
@@ -106,6 +111,7 @@ public class DatabaseManager {
 		return null;
 	}
 
+	//Inserts a document inside a collection
 	public boolean insertDocument(String data, String collectionName) {
 		try {
 			Document document = Document.parse(data);
@@ -154,6 +160,7 @@ public class DatabaseManager {
 			documents.add(doc);
 		}
 
+		//Session for the transaction
 		final ClientSession clientSession = mongoClient.startSession();
 
 		ReplaceOptions options = new ReplaceOptions();
@@ -161,6 +168,7 @@ public class DatabaseManager {
 
 		for(Document doc : documents) {
 
+			//New transaction for each document
 			TransactionBody<Void> txnBody = new TransactionBody<Void>() {
 			    public Void execute() {
 			        MongoCollection<Document> trip = database.getCollection("trip");
@@ -192,14 +200,14 @@ public class DatabaseManager {
 			    }
 			};
 			try {
-
+				//execute the transaction
 			    clientSession.withTransaction(txnBody);
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 				return false;
 			}
 		}
-
+		//close the transaction
 		clientSession.close();
 
 		return true;
