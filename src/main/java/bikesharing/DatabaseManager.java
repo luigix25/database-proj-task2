@@ -273,32 +273,6 @@ public class DatabaseManager {
 		if (stations.isEmpty())
 			return null;
 
-		/*Collections.sort(stations, (d1, d2) -> {
-			String s1 = (d1.split(":"))[1];
-			String s2 = (d2.split(":"))[1];
-
-			
-			
-			//System.out.println("s1 "+s1);
-			//System.out.println("s2 "+s2);
-			
-			int n = 0;
-			try {
-				int n1 = Integer.parseInt(s1);
-				int n2 = Integer.parseInt(s2);
-				
-				System.out.println("n1 "+n1);
-				System.out.println("n2 "+n2);
-				
-				n = n1 - n2;
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
-			
-			System.out.println(n);
-			return n;
-		});*/
-
 		return stations;
 	}
 
@@ -365,7 +339,6 @@ public class DatabaseManager {
 		addYear.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
 
 		List<Bson> pipeline = Arrays.asList(
-				//Aggregates.addFields(addYear),
 				Aggregates.match(new Document("time.year",year)),
 				Aggregates.group("$city", Accumulators.sum("trips", 1)),
 				Aggregates.project(Projections.fields(project))
@@ -397,7 +370,6 @@ public class DatabaseManager {
 		project.add(Projections.include("trips"));
 
 		ArrayList<Field<?>> addDates = new ArrayList<Field<?>>();
-//		addDates.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
 		addDates.add(new Field<Document>("month",new Document("$month","$time.timestamp_start")));
 
 		List<Bson> pipeline = Arrays.asList(
@@ -431,7 +403,8 @@ public class DatabaseManager {
 
 	}
 
-	public List<Document> tripsPerCityYear(String city,int year,String collectionName){		//on a monthly basis
+	//on a monthly basis
+	public List<Document> tripsPerCityYear(String city,int year,String collectionName){
 		List<Bson> project = new ArrayList<Bson>();
 		project.add(Projections.excludeId());
 		project.add(Projections.include("city"));
@@ -440,7 +413,6 @@ public class DatabaseManager {
 		project.add(Projections.include("trips"));
 
 		ArrayList<Field<?>> addDates = new ArrayList<Field<?>>();
-//		addDates.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
 		addDates.add(new Field<Document>("month",new Document("$month","$time.timestamp_start")));
 
 		List<Bson> pipeline = Arrays.asList(
@@ -484,7 +456,6 @@ public class DatabaseManager {
 
 		List<Bson> pipeline = Arrays.asList(
 				Aggregates.match(Filters.eq("city", city)),
-				//Aggregates.addFields(new Field<Document>("year",new Document("$year","$time.timestamp_start"))),
 				Aggregates.match(Filters.eq("time.year", year)),
 				Aggregates.group("$rider.gender", Accumulators.sum("count", 1)),
 				Aggregates.project(Projections.fields(projections))
@@ -535,7 +506,6 @@ public class DatabaseManager {
 		projections.add(new Document("gender","$_id"));
 
 		List<Bson> pipeline = Arrays.asList(
-				//Aggregates.addFields(new Field<Document>("year",new Document("$year","$time.timestamp_start"))),
 				Aggregates.match(Filters.eq("time.year", year)),
 				Aggregates.group("$rider.gender", Accumulators.sum("count", 1)),
 				Aggregates.project(Projections.fields(projections))
@@ -614,40 +584,6 @@ public class DatabaseManager {
 
 		return cities;
 	}
-
-	/*public List<Integer> getYears(){
-		List<Integer> years = new ArrayList<Integer>();
-
-		ArrayList<Field<?>> addYear = new ArrayList<Field<?>>();
-		//addYear.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
-
-		List<Bson> pipeline = Arrays.asList(
-				//Add Year Field
-				Aggregates.addFields(addYear),
-				//Group by Year
-				Aggregates.group("$year",
-						//Renames the _id to year
-						new BsonField("year", new Document("$first","$year"))
-				),
-				//Sort ASC by year
-				Aggregates.sort(new Document("year",1))
-		);
-
-
-		MongoCollection<Document> collection = database.getCollection("trip").withReadPreference(ReadPreference.secondaryPreferred());
-
-		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
-
-
-		while(cursor.hasNext()) {
-			years.add((Integer) cursor.next().get("year"));
-		}
-
-		cursor.close();
-
-
-		return years;
-	}*/
 
 	public List<Integer> getYears(){
 
