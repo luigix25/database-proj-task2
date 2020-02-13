@@ -124,6 +124,7 @@ public class IndexController {
 
 	}
 
+	//Setup the User Table
 	private void initTable() {
 
 		columnName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
@@ -132,6 +133,8 @@ public class IndexController {
 		columnUsername.setCellValueFactory(new PropertyValueFactory<User, String>("username"));
 		loadUsers();
 	}
+	
+	//Setup the Bar Chart
 
 	private void initChart() {
 
@@ -148,6 +151,8 @@ public class IndexController {
         barChart.getData().add(series1);
 	}
 	
+	//Setup the Bar Chart Table
+
 	private void initPieChart() {
 		List<Document> data = dm.tripsPerGender("trip");
 		populatePieChart(data);
@@ -234,6 +239,7 @@ public class IndexController {
 
 	}
 
+	//Open new view for hiring a user
 	@FXML
 	private void hireUser() {
 		status.setText("");
@@ -252,6 +258,7 @@ public class IndexController {
 			return;
 		}
 
+		//Create alert for confirmation
 		Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Confirm Fire");
         alert.setHeaderText("Are you sure to fire " + user.getName() + " " + user.getSurname() + "?");
@@ -270,6 +277,8 @@ public class IndexController {
 		loadUsers();
 
 	}
+	
+	//Handler for the upload button
 
 	@FXML
 	private void load() {
@@ -281,6 +290,7 @@ public class IndexController {
 		FileManager fm = new FileManager(this.currentFile.toURI());
 		List<String> data;
 
+		//Read the file line by line
 		try {
 			data = fm.readLines();
 		} catch (Exception e) {
@@ -290,6 +300,7 @@ public class IndexController {
 		progressIndicator.setProgress(-1.0);
 		status.setText("Loading dataset. This operation could take some minutes. Please wait...");
         
+		//Create task for async operation
         Task<Boolean> task = new Task<Boolean>() {
         	@Override
         	public Boolean call() {
@@ -304,6 +315,7 @@ public class IndexController {
 				progressIndicator.setProgress(1.0);
         		setUpCitySelector();
         	
+        		//Creates a Success Alert
 	        	Alert alert = new Alert(AlertType.INFORMATION);
 	            alert.setTitle("Success");
 	            alert.setHeaderText("Task succeded");
@@ -326,9 +338,12 @@ public class IndexController {
         	}
         });
         
+        //start the task on a new thread
 		new Thread(task).start();
 	}
 
+	//Handler for the delete button
+	
 	@FXML
 	private void delete() {
 		deleteStatus.setText("");
@@ -489,6 +504,8 @@ public class IndexController {
 		new Thread(task).start();
 	}
 	
+	//Populate the barChart with the data passed as argument
+
 	private void populateBarChartPerMonth(List<Document> data) {
 		
 		for(int i=1;i<=12;i++) {
@@ -514,6 +531,9 @@ public class IndexController {
 		}
 		
 	}
+	
+	//Populate the barChart with the data passed as argument
+
 	
 	private void populateBarChartPerWeek(List<Document> data) {
 		final String dowNames[] = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
@@ -541,6 +561,8 @@ public class IndexController {
 		}
 
 	}
+	
+	//Populate the barChart with the data passed as argument
 
 	private void populateBarChartPerYear(List<Document> data) {
 		int base_year = Integer.MAX_VALUE;
@@ -586,6 +608,8 @@ public class IndexController {
         barChart.getData().add(series1);
 	}
 
+	//Handler for the change password action
+
 	@FXML
 	private void changePassword() {
 		if (newPassword.getText().equals("")) {
@@ -599,6 +623,7 @@ public class IndexController {
 		}
 	}
 	
+	//Handler called everytime a city is selected inside the dropdown menu
 	@FXML
 	private void citySelected() {
 		choiceStation.getItems().clear();

@@ -12,6 +12,8 @@ public class FileManager {
 		filePath = Paths.get(path);
 	}
 	
+	
+	//Reads all the lines of the file and put each one of them inside a list of String
 	public List<String> readLines() throws Exception {
 		
 		List<String> lines;

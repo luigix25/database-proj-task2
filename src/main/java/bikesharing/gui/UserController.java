@@ -20,6 +20,8 @@ public class UserController {
 		this.indexCtrl = indexCtrl;
 	}
 	
+	
+	//This function handle the usert insertion action on the GUI
 	@FXML
 	private void insertUser() {
 		status.setText("");
@@ -34,6 +36,7 @@ public class UserController {
 			return;
 		}
 		
+		//Creates user instance
 		User user = new User();
 		user.setName(name.getText());
 		user.setSurname(surname.getText());
@@ -41,12 +44,14 @@ public class UserController {
 		user.setStatus("S");
 		user.setPassword("pwd");
 		
+		//Gets the db instance
 		dm = DatabaseManager.getInstance();
 		if (!dm.insertUser(user)) {
 			status.setText("Database error: impossible to insert a new user");
 		} else {
+			//Realods the table
 			indexCtrl.loadUsers();
-			
+			//Show successful message
 			Alert alert = new Alert(AlertType.INFORMATION);
 	        alert.setTitle("Success");
 	        alert.setHeaderText("Successfully done!");

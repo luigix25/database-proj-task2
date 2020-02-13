@@ -23,6 +23,7 @@ public class LoginController {
     private void login(ActionEvent event){
 		status.setText("please wait a moment");
 
+		//Gets the singleton instance of the DBManager
 		DatabaseManager dm = DatabaseManager.getInstance();
 		
 		if (username.getText().isEmpty()) {
@@ -35,6 +36,7 @@ public class LoginController {
             return;
         }
 
+        //Creates an async test in order to check VPN connectivity
 		Task<Object> task = new Task<Object>() {
 			@Override
 			public Object call() {
@@ -53,6 +55,8 @@ public class LoginController {
 			}
 		};
         
+		
+		//Callback for the test
 		task.setOnSucceeded(e -> {
 			Object result = task.getValue();
 
@@ -61,7 +65,10 @@ public class LoginController {
 				return;
 			} else if (result instanceof Boolean) {
 				if ((Boolean) (result) == false) {
+					
 					status.setText("server is not reachable");
+					//Create new Alert for the missing VPN connectivity
+
 					Alert alert = new Alert(AlertType.WARNING);
 					alert.setTitle("Warning");
 					alert.setHeaderText("Server connection");
@@ -71,11 +78,13 @@ public class LoginController {
 				}
 			} else if (result instanceof User) {
 				User user = (User) result;
+				//Loads the user controller and passes the user object
 				IndexController ctrl = (IndexController) StageUtils.replace(this, event, "/gui/index.fxml");
 				ctrl.init(user);
 			}
 		});
 
+		//Starts the async task
 		new Thread(task).start();
 
     }

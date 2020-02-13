@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bson.Document;
 
+//Useful class used as an enum
 public class FilteredResult {
 
 	enum Type { /* In java everything is a class, even an enum! O_O */

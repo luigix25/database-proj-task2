@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.bson.BsonArray;
@@ -91,8 +90,9 @@ public class DatabaseManager {
 		return this.hosts;
 	}
 
+	
+	//Performs the actual login, returns null is the credentials are wrong 
 	public User login(String username, String password) {
-		//Can't use secondary, because i need consistency
 
 		Document d = database.getCollection("user").find(and(eq("username", username), eq("password", password))).first();
 		if (d != null) {
@@ -117,6 +117,8 @@ public class DatabaseManager {
 		return true;
 	}
 
+	//Inserts a batch of documents inside the trip and station collections using a transaction
+	
 	public boolean insertBatch(List<String> data) {
 		if (data == null) {
 			System.err.println("No Data");
@@ -190,10 +192,6 @@ public class DatabaseManager {
 			    }
 			};
 			try {
-			    /*
-			       Step 4: Use .withTransaction() to start a transaction,
-			       execute the callback, and commit (or abort on error).
-			    */
 
 			    clientSession.withTransaction(txnBody);
 			} catch (RuntimeException e) {
@@ -207,51 +205,7 @@ public class DatabaseManager {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
-	public boolean updateStationRedundancy() {
-		List<Document> documents = new ArrayList<Document>();
-
-		for (String city : getCities()) {
-			database.getCollection("station").deleteMany(eq("city", city));
-			System.err.println("[D] preparing redundancy for " + city + " ");
-
-			List<Bson> pipeline = Arrays.asList(
-					new Document("$match", new Document("city", city)),
-					new Document("$set", new Document("stations", new BsonArray(Arrays.asList(new BsonString("$space.station_start"), new BsonString("$space.station_end"))))),
-					new Document("$project", new Document("stations", 1)),
-			        new Document("$group", new Document("_id", null).append("s", new Document("$addToSet", new Document("$arrayElemAt", new BsonArray(Arrays.asList(new BsonString("$stations"), new BsonInt32(0))))))));
-
-			AggregateIterable<Document> output = database.getCollection("trip").aggregate(pipeline);
-			List<String> stations = null;
-			if (output != null) {
-				Document result = output.first();
-				if (((ArrayList<String>) (result.get("s"))).get(0) != null) {/* safe type conversion, as long as database is not screwed up */
-					stations = result.getList("s", String.class);
-				}
-			}
-			if (stations == null || stations.isEmpty() || stations.get(0) == null) {
-				System.err.println("EMPTY");
-				continue;
-			}
-
-			for (String station : stations) {
-				Document station_doc = new Document();
-				station_doc.append("name", station).append("city", city);
-				documents.add(station_doc);
-			}
-
-			System.err.println("OK");
-		}
-
-		try {
-			database.getCollection("station").insertMany(documents);
-		} catch (Exception e) {
-			return false;
-		}
-
-		return true;
-	}
-
+	//Returns all the stations for a given city
 	public List<String> getStationsForCity(String city) {
 		List<Bson> pipeline = Arrays.asList(
 				new Document("$match", new Document("city", city))
@@ -312,7 +266,6 @@ public class DatabaseManager {
 
 		List<Bson> pipeline = Arrays.asList(
 				Aggregates.match(new Document("city", city)), 
-				//Aggregates.addFields(addYear),  
 				Aggregates.group("$time.year", Accumulators.sum("count", 1)));
 
 		MongoCursor<Document> cursor = database.getCollection("trip").aggregate(pipeline).iterator();
@@ -331,16 +284,22 @@ public class DatabaseManager {
 	//For a Given Year
 	public List<Document> tripsForEachCity(int year, String collectionName){
 		List<Bson> project = new ArrayList<Bson>();
+		//Remove the id
 		project.add(Projections.excludeId());
+		//Include the trips field
 		project.add(Projections.include("trips"));
+		//Rename _id to city
 		project.add(new Document("city","$_id"));
 
 		ArrayList<Field<?>> addYear = new ArrayList<Field<?>>();
 		addYear.add(new Field<Document>("year",new Document("$year","$time.timestamp_start")));
 
 		List<Bson> pipeline = Arrays.asList(
+				//Filter on year
 				Aggregates.match(new Document("time.year",year)),
+				//Group on city
 				Aggregates.group("$city", Accumulators.sum("trips", 1)),
+				//remove and rename some fields
 				Aggregates.project(Projections.fields(project))
 		);
 
@@ -363,6 +322,8 @@ public class DatabaseManager {
 	//Trips for a given city
 	public List<Document> tripsForACity(String city, String collectionName){
 		List<Bson> project = new ArrayList<Bson>();
+		//Removes id and adds several fields to the projection
+		
 		project.add(Projections.excludeId());
 		project.add(Projections.include("city"));
 		project.add(Projections.include("month"));
@@ -406,6 +367,8 @@ public class DatabaseManager {
 	//on a monthly basis
 	public List<Document> tripsPerCityYear(String city,int year,String collectionName){
 		List<Bson> project = new ArrayList<Bson>();
+		//Removes id and adds several fields to the projection
+
 		project.add(Projections.excludeId());
 		project.add(Projections.include("city"));
 		project.add(Projections.include("month"));
@@ -455,9 +418,13 @@ public class DatabaseManager {
 		projections.add(new Document("gender","$_id"));
 
 		List<Bson> pipeline = Arrays.asList(
+				//Filter on City
 				Aggregates.match(Filters.eq("city", city)),
+				//Filter on Year
 				Aggregates.match(Filters.eq("time.year", year)),
+				//Group on City
 				Aggregates.group("$rider.gender", Accumulators.sum("count", 1)),
+				//Project  the fields specified in the list
 				Aggregates.project(Projections.fields(projections))
 		);
 
