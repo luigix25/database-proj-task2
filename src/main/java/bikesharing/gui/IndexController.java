@@ -293,7 +293,7 @@ public class IndexController {
         Task<Boolean> task = new Task<Boolean>() {
         	@Override
         	public Boolean call() {
-				return dm.insertBatch(data)/* && dm.updateStationRedundancy()*/;
+				return dm.insertBatch(data);
         	}
         };
         
@@ -362,7 +362,6 @@ public class IndexController {
         alert.setTitle("Success");
         alert.setHeaderText("Success: " + deletedTrips + " document(s) have been deleted");
         alert.showAndWait();
-        //to clear selected date after deleting
         fromDate.setValue(null);
         toDate.setValue(null);
        
